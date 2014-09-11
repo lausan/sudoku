@@ -4,8 +4,16 @@
   "description": "",
   "main": "index.html",
   "scripts": {
+    "watch": "watchify ./app/app.js -s sudoku -o ./app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^2.4.1"
+  },
+  "browserify": {},
+  "devDependencies": {
+    "watchify": "^1.0.2"
+  }
 }
