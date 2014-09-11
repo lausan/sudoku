@@ -1,17 +1,25 @@
 var _ = require( "lodash" );
 
 var BOARD_SIZE = 9;
-
 var SUB_BOARD_SIZE = 3;
+
+function validValue ( value ) {
+  return (
+    Number( value ) === value &&
+    value % 1 === 0 &&
+    value > 0 &&
+    value < 10
+  );
+}
 
 function Board ( board ) {
   if ( board == null ) {
     board = [];
     for ( var i = 0; i < BOARD_SIZE; i++ ) {
-      board.push( [] );
-      for ( var j = 0; j < BOARD_SIZE; j++ ) {
-        board[i].push( "-" );
-      }
+      board.push( new Array( BOARD_SIZE ) );
+      // for ( var j = 0; j < BOARD_SIZE; j++ ) {
+      //   board[i].push( "" );
+      // }
     }
   }
   this._board = board;
@@ -73,7 +81,7 @@ Board.prototype.eachColumn = function ( fn ) {
 };
 
 Board.prototype.eachSubBoard = function ( fn ) {
-  var max = BOARD_SIZE / SUB_BOARD_SIZE - 1;
+  var max = BOARD_SIZE / SUB_BOARD_SIZE;
   for ( var i = 0; i < max; i++ ) {
     for ( var j = 0; j < max; j++ ) {
       fn( this.subBoardValues( i, j ) );
@@ -81,18 +89,17 @@ Board.prototype.eachSubBoard = function ( fn ) {
   }
 };
 
-Board.numberSetIsValid = function ( arr ) {
-  if ( arr.length !== BOARD_SIZE ) {
-    return false;
-  }
-  return arr
-    .map( Number )
-    .sort( function ( a, b ) {
-      return a - b;
-    })
-    .every( function ( value, i ) {
-      return value === i + 1;
-    });
+// Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9
+Board.isPartiallyValid = function ( arr ) {
+  return _.unique( arr ).length === arr.length &&
+    arr.every( validValue );
+};
+
+// Checks if an array contains exactly 1, 2, 3, 4, 5, 6, 7, 8, 9
+Board.isFullyValid = function ( arr ) {
+  return _.unique( arr ).length === arr.length &&
+    arr.length === BOARD_SIZE &&
+    arr.every( validValue );
 };
 
 module.exports = Board;
