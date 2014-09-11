@@ -1,0 +1,21 @@
+{
+  "name": "sudoku",
+  "version": "0.0.0",
+  "authors": [
+    "Nick Bottomley <nhbottomley@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "jquery": "~2.1.1"
+  }
+}
