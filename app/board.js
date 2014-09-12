@@ -30,6 +30,11 @@ function standardizeValue ( value ) {
 
 function Board ( board ) {
   this._board = board.map( util.sliceOne );
+  this.on( "set", function () {
+    if ( this.isComplete() ) {
+      this.emit( "complete" );
+    }
+  }.bind( this ) );
 }
 
 Board.prototype = Object.create( Emitter.prototype );
@@ -47,7 +52,7 @@ Board.prototype.set = function ( x, y, value ) {
     throw new Error( "Attempting to set cell out of range" );
   }
   this._board[y][x] = standardizeValue( value );
-  // this.emit( "set", x, y, this.get( x, y ) );
+  this.emit( "set", x, y, this.get( x, y ) );
   return this;
 };
 

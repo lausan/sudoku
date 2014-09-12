@@ -31,6 +31,17 @@ beforeEach( function () {
   solved = new Board( fixtures.solution );
 });
 
+describe( "instance event listening behavior", function () {
+  it( "should emit a 'complete' event after 'set' if .isComplete()", function () {
+    var bool = false;
+    solved.on( "complete", function () {
+      bool = true;
+    });
+    solved.set( 0, 0, 5 );
+    bool.should.equal( true );
+  });
+});
+
 describe( "instance methods", function () {
   describe( ".get()", function () {
     it( "should get value at coordinates", function () {
