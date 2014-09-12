@@ -65,7 +65,7 @@ Board.prototype.set = function ( x, y, value ) {
     this._board[y][x] = standardizeValue( value );
     this.emit( "data-change", x, y, this.get( x, y ) );
   }
-  if ( this.isComplete ) {
+  if ( this.isComplete() ) {
     this.emit( "complete" );
   }
   return this;
