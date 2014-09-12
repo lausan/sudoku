@@ -22,7 +22,6 @@
     "chai": "^1.9.1",
     "function-bind": "^1.0.0",
     "mocha": "^1.21.4",
-    "sinon": "^1.10.3",
     "testling": "^1.7.0",
     "watchify": "^1.0.2"
   }
