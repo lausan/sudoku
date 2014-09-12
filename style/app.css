@@ -94,6 +94,8 @@ input {
     height: 3rem;
     background: transparent;
     font-size: 2rem; }
+    .board .cell--input[disabled] {
+      opacity: 0.75; }
     @media screen and (max-width: 32rem) {
       .board .cell--input {
         max-width: 2rem;
