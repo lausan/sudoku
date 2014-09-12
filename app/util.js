@@ -7,6 +7,8 @@ function unique ( arr ) {
   }, [] );
 }
 
+// http://jsperf.com/push-flatten-vs-concat-flatten
+// flattening with push.apply is faster than .concat
 function flatten ( arr ) {
   return arr.reduce( function ( result, item ) {
     [].push.apply( result, Array.isArray( item ) ? flatten( item ) : [ item ] );
@@ -18,17 +20,27 @@ function identity ( obj ) {
   return obj;
 }
 
+function truthyOrNull ( obj ) {
+  return obj || obj === null;
+}
+
 function validValue ( value ) {
   return (
     Number( value ) === value &&
     value % 1 === 0 &&
     value > 0 &&
     value < 10
-  );
+  ) || value === null;
 }
 
 function demethodize ( method ) {
   return Function.prototype.call.bind( method );
+}
+
+function demethodizeOne ( method ) {
+  return function ( arg ) {
+    return method.call( arg );
+  };
 }
 
 function opposite ( value ) {
@@ -45,8 +57,9 @@ module.exports = {
   unique: unique,
   flatten: flatten,
   identity: identity,
-  validValue: validValue,
-  slice: demethodize( [].slice ),
   opposite: opposite,
+  validValue: validValue,
+  sliceOne: demethodizeOne( [].slice ),
+  slice: demethodize( [].slice ),
   addArrays: addArrays
 };

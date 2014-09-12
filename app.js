@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.sudoku=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.sudoku=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/app.js":[function(require,module,exports){
 var fixtures = require( "./fixture" )();
 
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
   problem: fixtures.problem
 };
 
-},{"./board":4,"./board-controller":2,"./board-view":3,"./fixture":6}],2:[function(require,module,exports){
+},{"./board":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js","./board-controller":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js","./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./fixture":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js":[function(require,module,exports){
 // APP MODULES
 var Emitter = require( "./emitter" );
 var BoardView = require( "./board-view" );
@@ -49,7 +49,7 @@ BoardController.prototype.syncValidity = function () {
 
 module.exports = BoardController;
 
-},{"./board-view":3,"./emitter":5}],3:[function(require,module,exports){
+},{"./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
 // NPM MODULES
 var $ = require( "jquery" );
 
@@ -74,7 +74,7 @@ var INVALID_STYLE = "{ background-color: rgba(255, 0, 0, .2); }";
 // assuming sub-boards are indexed left to right
 // and top to bottom.
 function calculateSubBoard ( x, y ) {
-  return Math.floor( x / SUB_BOARD_SIZE ) * SUB_BOARD_SIZE + Math.floor( y / SUB_BOARD_SIZE );
+  return Math.floor( y / SUB_BOARD_SIZE ) * SUB_BOARD_SIZE + Math.floor( x / SUB_BOARD_SIZE );
 }
 
 // returns the HTML for a cell <li> element
@@ -132,7 +132,6 @@ BoardView.prototype = Object.create( Emitter.prototype );
 BoardView.prototype.constructor = BoardView;
 
 
-
 // INSTANCE METHODS
 
 // Generate the HTML for a given board
@@ -169,7 +168,7 @@ BoardView.prototype.updateCell = function ( x, y, value ) {
 // Updates the board's styles to reflect invalid
 // rows, columns or sub-boards
 BoardView.prototype.updateStyle = function ( validity ) {
-  var style = "";
+  var style = "/* all valid */";
   var selectors = Object.keys( validity ).reduce( function ( selectors, key ) {
     return selectors.concat(
       validity[key]
@@ -187,7 +186,7 @@ BoardView.prototype.updateStyle = function ( validity ) {
 
 module.exports = BoardView;
 
-},{"./emitter":5,"./util":7,"jquery":8}],4:[function(require,module,exports){
+},{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js","jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js":[function(require,module,exports){
 var util = require( "./util" );
 
 var BOARD_SIZE = 9;
@@ -203,7 +202,7 @@ function validValue ( value ) {
 }
 
 function Board ( board ) {
-  this._board = board;
+  this._board = board.map( util.sliceOne );
 }
 
 Board.prototype.get = function ( x, y ) {
@@ -240,15 +239,15 @@ Board.prototype.subBoardValues = function ( i ) {
     throw new Error( "Attempting to read sub-board out of range" );
   }
   var values = [];
-  var x = i % SUB_BOARD_SIZE;
-  var y = Math.floor( i / SUB_BOARD_SIZE );
+  var y = i % SUB_BOARD_SIZE;
+  var x = Math.floor( i / SUB_BOARD_SIZE );
   var startX = x * SUB_BOARD_SIZE;
   var endX = startX + SUB_BOARD_SIZE;
   var startY = y * SUB_BOARD_SIZE;
   var endY = startY + SUB_BOARD_SIZE;
-  for ( var j = startY; j < endY; j++ ) {
-    for ( var k = startX; k < endX; k++ ) {
-      values.push( this.get( j, k ) );
+  for ( var j = startX; j < endX; j++ ) {
+    for ( var k = startY; k < endY; k++ ) {
+      values.push( this.get( k, j ) );
     }
   }
   return values;
@@ -279,26 +278,6 @@ Board.prototype.mapSubBoards = function ( fn ) {
   return this._mapGroup( fn, "subBoard" );
 };
 
-// Returns whether or not the board is in a valid solution state
-Board.prototype.isComplete = function () {
-  return this.mapRows( Board.isFullyValid )
-    .concat( this.mapColumns( Board.isFullyValid ) )
-    .concat( this.mapSubBoards( Board.isFullyValid ) )
-    .every( util.identity );
-};
-
-// Returns a copy of the board's underlying 2d array
-Board.prototype.asArray = function () {
-  return this._board.map( function ( row ) {
-    return row.slice();
-  });
-};
-
-// Returns a flattened version of the underlying 2d array
-Board.prototype.flatten = function () {
-  return util.flatten( this._board );
-};
-
 // Returns an array with the validity of each row
 Board.prototype.rowValidity = function () {
   return this.mapRows( Board.isPartiallyValid );
@@ -314,11 +293,29 @@ Board.prototype.subBoardValidity = function () {
   return this.mapSubBoards( Board.isPartiallyValid );
 };
 
+// Returns whether or not the board is in a valid solution state
+Board.prototype.isComplete = function () {
+  return this.mapRows( Board.isFullyValid )
+    .concat( this.mapColumns( Board.isFullyValid ) )
+    .concat( this.mapSubBoards( Board.isFullyValid ) )
+    .every( util.identity );
+};
+
+// Returns a copy of the board's underlying 2d array
+Board.prototype.asArray = function () {
+  return this._board.map( util.sliceOne );
+};
+
+// Returns a flattened version of the underlying 2d array
+Board.prototype.flatten = function () {
+  return util.flatten( this._board );
+};
+
 // Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9, or falsy
 Board.isPartiallyValid = function ( arr ) {
-  arr = arr.filter( util.identity );
-  return util.unique( arr ).length === arr.length &&
-    arr.every( validValue );
+  var allValid = arr.every( validValue );
+  var withoutNull = arr.filter( util.identity );
+  return allValid && withoutNull.length === util.unique( withoutNull ).length;
 };
 
 // Checks if an array contains exactly 1, 2, 3, 4, 5, 6, 7, 8, 9
@@ -330,7 +327,7 @@ Board.isFullyValid = function ( arr ) {
 
 module.exports = Board;
 
-},{"./util":7}],5:[function(require,module,exports){
+},{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js":[function(require,module,exports){
 var slice = require( "./util" ).slice;
 
 // Each method guards against this._events being undefined
@@ -379,7 +376,7 @@ Emitter.prototype.off = function ( name, method ) {
   if ( arguments.length === 0 ) {
     this._events = {};
   } else if ( arguments.length === 1 ) {
-    this._events[name] = [];
+    delete this._events[name];
   } else {
     if ( this._events[name] ) {
       i = this._events[name].indexOf( method );
@@ -393,7 +390,7 @@ Emitter.prototype.off = function ( name, method ) {
 
 module.exports = Emitter;
 
-},{"./util":7}],6:[function(require,module,exports){
+},{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js":[function(require,module,exports){
 module.exports = function () {
   return {
     solution : [
@@ -421,7 +418,7 @@ module.exports = function () {
   };
 };
 
-},{}],7:[function(require,module,exports){
+},{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js":[function(require,module,exports){
 function unique ( arr ) {
   return arr.reduce( function ( result, item ) {
     if ( result.indexOf( item ) === -1 ) {
@@ -431,6 +428,8 @@ function unique ( arr ) {
   }, [] );
 }
 
+// http://jsperf.com/push-flatten-vs-concat-flatten
+// flattening with push.apply is faster than .concat
 function flatten ( arr ) {
   return arr.reduce( function ( result, item ) {
     [].push.apply( result, Array.isArray( item ) ? flatten( item ) : [ item ] );
@@ -442,17 +441,27 @@ function identity ( obj ) {
   return obj;
 }
 
+function truthyOrNull ( obj ) {
+  return obj || obj === null;
+}
+
 function validValue ( value ) {
   return (
     Number( value ) === value &&
     value % 1 === 0 &&
     value > 0 &&
     value < 10
-  );
+  ) || value === null;
 }
 
 function demethodize ( method ) {
   return Function.prototype.call.bind( method );
+}
+
+function demethodizeOne ( method ) {
+  return function ( arg ) {
+    return method.call( arg );
+  };
 }
 
 function opposite ( value ) {
@@ -469,13 +478,14 @@ module.exports = {
   unique: unique,
   flatten: flatten,
   identity: identity,
-  validValue: validValue,
-  slice: demethodize( [].slice ),
   opposite: opposite,
+  validValue: validValue,
+  sliceOne: demethodizeOne( [].slice ),
+  slice: demethodize( [].slice ),
   addArrays: addArrays
 };
 
-},{}],8:[function(require,module,exports){
+},{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js":[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/
@@ -9667,5 +9677,5 @@ return jQuery;
 
 }));
 
-},{}]},{},[1])(1)
+},{}]},{},["/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/app.js"])("/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/app.js")
 });

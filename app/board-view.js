@@ -22,7 +22,7 @@ var INVALID_STYLE = "{ background-color: rgba(255, 0, 0, .2); }";
 // assuming sub-boards are indexed left to right
 // and top to bottom.
 function calculateSubBoard ( x, y ) {
-  return Math.floor( x / SUB_BOARD_SIZE ) * SUB_BOARD_SIZE + Math.floor( y / SUB_BOARD_SIZE );
+  return Math.floor( y / SUB_BOARD_SIZE ) * SUB_BOARD_SIZE + Math.floor( x / SUB_BOARD_SIZE );
 }
 
 // returns the HTML for a cell <li> element
@@ -80,7 +80,6 @@ BoardView.prototype = Object.create( Emitter.prototype );
 BoardView.prototype.constructor = BoardView;
 
 
-
 // INSTANCE METHODS
 
 // Generate the HTML for a given board
@@ -117,7 +116,7 @@ BoardView.prototype.updateCell = function ( x, y, value ) {
 // Updates the board's styles to reflect invalid
 // rows, columns or sub-boards
 BoardView.prototype.updateStyle = function ( validity ) {
-  var style = "";
+  var style = "/* all valid */";
   var selectors = Object.keys( validity ).reduce( function ( selectors, key ) {
     return selectors.concat(
       validity[key]

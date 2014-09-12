@@ -46,7 +46,7 @@ Emitter.prototype.off = function ( name, method ) {
   if ( arguments.length === 0 ) {
     this._events = {};
   } else if ( arguments.length === 1 ) {
-    this._events[name] = [];
+    delete this._events[name];
   } else {
     if ( this._events[name] ) {
       i = this._events[name].indexOf( method );

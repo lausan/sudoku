@@ -13,7 +13,7 @@ function validValue ( value ) {
 }
 
 function Board ( board ) {
-  this._board = board;
+  this._board = board.map( util.sliceOne );
 }
 
 Board.prototype.get = function ( x, y ) {
@@ -50,15 +50,15 @@ Board.prototype.subBoardValues = function ( i ) {
     throw new Error( "Attempting to read sub-board out of range" );
   }
   var values = [];
-  var x = i % SUB_BOARD_SIZE;
-  var y = Math.floor( i / SUB_BOARD_SIZE );
+  var y = i % SUB_BOARD_SIZE;
+  var x = Math.floor( i / SUB_BOARD_SIZE );
   var startX = x * SUB_BOARD_SIZE;
   var endX = startX + SUB_BOARD_SIZE;
   var startY = y * SUB_BOARD_SIZE;
   var endY = startY + SUB_BOARD_SIZE;
-  for ( var j = startY; j < endY; j++ ) {
-    for ( var k = startX; k < endX; k++ ) {
-      values.push( this.get( j, k ) );
+  for ( var j = startX; j < endX; j++ ) {
+    for ( var k = startY; k < endY; k++ ) {
+      values.push( this.get( k, j ) );
     }
   }
   return values;
@@ -89,26 +89,6 @@ Board.prototype.mapSubBoards = function ( fn ) {
   return this._mapGroup( fn, "subBoard" );
 };
 
-// Returns whether or not the board is in a valid solution state
-Board.prototype.isComplete = function () {
-  return this.mapRows( Board.isFullyValid )
-    .concat( this.mapColumns( Board.isFullyValid ) )
-    .concat( this.mapSubBoards( Board.isFullyValid ) )
-    .every( util.identity );
-};
-
-// Returns a copy of the board's underlying 2d array
-Board.prototype.asArray = function () {
-  return this._board.map( function ( row ) {
-    return row.slice();
-  });
-};
-
-// Returns a flattened version of the underlying 2d array
-Board.prototype.flatten = function () {
-  return util.flatten( this._board );
-};
-
 // Returns an array with the validity of each row
 Board.prototype.rowValidity = function () {
   return this.mapRows( Board.isPartiallyValid );
@@ -124,11 +104,29 @@ Board.prototype.subBoardValidity = function () {
   return this.mapSubBoards( Board.isPartiallyValid );
 };
 
+// Returns whether or not the board is in a valid solution state
+Board.prototype.isComplete = function () {
+  return this.mapRows( Board.isFullyValid )
+    .concat( this.mapColumns( Board.isFullyValid ) )
+    .concat( this.mapSubBoards( Board.isFullyValid ) )
+    .every( util.identity );
+};
+
+// Returns a copy of the board's underlying 2d array
+Board.prototype.asArray = function () {
+  return this._board.map( util.sliceOne );
+};
+
+// Returns a flattened version of the underlying 2d array
+Board.prototype.flatten = function () {
+  return util.flatten( this._board );
+};
+
 // Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9, or falsy
 Board.isPartiallyValid = function ( arr ) {
-  arr = arr.filter( util.identity );
-  return util.unique( arr ).length === arr.length &&
-    arr.every( validValue );
+  var allValid = arr.every( validValue );
+  var withoutNull = arr.filter( util.identity );
+  return allValid && withoutNull.length === util.unique( withoutNull ).length;
 };
 
 // Checks if an array contains exactly 1, 2, 3, 4, 5, 6, 7, 8, 9
