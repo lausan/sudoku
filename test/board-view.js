@@ -11,6 +11,7 @@
  */
 
 var should = require( "chai" ).should();
+var $ = require( "jquery" );
 
 var Board = require( "../app/board" );
 var BoardView = require( "../app/board-view" );
@@ -34,7 +35,14 @@ describe( "instance methods", function () {
       view.element.find( "input" ).eq( 0 ).val().should.equal( "1" );
     });
     it( "builds elements with the correct CSS classes", function () {
-
+      [].every.call( view.element.find( "ul" ), function ( ul ) {
+        return $( ul ).is( ".row" );
+      }).should.equal( true );
+      var cell = view.element.find( "ul" ).eq( 3 ).find( "li" ).eq( 2 );
+      cell.is( ".cell" ).should.equal( true );
+      cell.is( ".column-2" ).should.equal( true );
+      cell.is( ".row-3" ).should.equal( true );
+      cell.is( ".sub-board-3" ).should.equal( true );
     });
   });
 
