@@ -6,13 +6,18 @@ body
   color: #333
   margin: 0
 
+button,
+input
+  font: inherit
+
 .page-header
   background: #2980b9
   color: #fff
   text-align: center
+  padding: 1rem
   h1
     margin: 0
-    padding: .5rem
+    padding-bottom: .5rem
   ul
     list-style-type: none
     padding: .5rem
@@ -30,6 +35,26 @@ body
   max-width: 100%
   max-width: -webkit-calc( 100% - 2rem )
   max-width: calc( 100% - 2rem )
+
+.won
+  display: none
+  background: #2ecc71
+  color: white
+  text-align: center
+  padding: 1rem
+  h2
+    margin: 0
+  .new-game
+    background: transparent
+    color: white
+    border: 1px solid white
+    border-radius: .25rem
+    display: block
+    padding: .25em
+    margin: 0 auto
+    &:hover
+      color: #2ecc71
+      background: white
 
 .block
   display: block
