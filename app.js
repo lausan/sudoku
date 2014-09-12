@@ -1,18 +1,15 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.sudoku=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/app.js":[function(require,module,exports){
+"use strict";
+
 // board generator
 var _sudoku = require( "sudoku" );
 var $ = require( "jquery" );
 
-var fixtures = require( "./fixture" )();
-
 var Board = require( "./board" );
 var BoardView = require( "./board-view" );
 var BoardController = require( "./board-controller" );
-var solution = fixtures.solution;
-var problem = fixtures.problem;
 
 var sudoku = ( function () {
-  var body = $( "body" );
   var main = $( ".main" );
   var won = $( ".won" );
 
@@ -53,13 +50,13 @@ var sudoku = ( function () {
       var board = new Board( b || makeBoard() );
       var view = new BoardView();
       var ctrl = new BoardController( board, view );
-      main.append( view.element );
       // _game is exposed for debugging and inspection; doesn't need to be
       this._game = {
         board: board,
         view: view,
         ctrl: ctrl
       };
+      main.append( view.element );
       board.on( "complete", onWin );
       board.emit( "set" );
     },
@@ -79,18 +76,16 @@ var sudoku = ( function () {
   };
 })();
 
-// to make this entirely encapsulated we could just do:
-//
-// sudoku.newGame();
-//
-// ... and export nothing
+sudoku.newGame();
 
+// exposing sudoku object for inspection
 module.exports = sudoku;
 
-},{"./board":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js","./board-controller":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js","./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./fixture":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js","jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js","sudoku":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/sudoku/index.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js":[function(require,module,exports){
+},{"./board":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js","./board-controller":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js","./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js","sudoku":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/sudoku/index.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js":[function(require,module,exports){
+"use strict";
+
 // APP MODULES
 var Emitter = require( "./emitter" );
-var BoardView = require( "./board-view" );
 
 // PRIMARY MODULE CLASS
 
@@ -99,21 +94,29 @@ var BoardView = require( "./board-view" );
 
 function BoardController ( board, view ) {
   this.board = board;
-  this.view = view || new BoardView();
+  this.view = view;
   this.view.render( this.board.asArray() );
-  this.view.on( "change", function ( evt ) {
-    var coord = evt.target.id.split( "-" );
-    this.syncCell( coord[0], coord[1], evt.target.value );
+  this.view.on( "ui-change", function ( x, y, value ) {
+    this.updateModel( x, y, value );
+  }.bind( this ) );
+
+  this.board.on( "data-change", function ( x, y, value ) {
+    this.updateView( x, y, value );
     this.syncValidity();
   }.bind( this ) );
+
+  this.view.render( this.board.asArray() );
 }
 
 BoardController.prototype = Object.create( Emitter.prototype );
 BoardController.prototype.constructor = BoardController;
 
-BoardController.prototype.syncCell = function ( x, y, value ) {
+BoardController.prototype.updateModel = function ( x, y, value ) {
   this.board.set( x, y, value );
-  this.view.updateCell( x, y, this.board.get( x, y ) );
+};
+
+BoardController.prototype.updateView = function ( x, y, value ) {
+  this.view.updateCell( x, y, value );
 };
 
 BoardController.prototype.syncValidity = function () {
@@ -126,7 +129,9 @@ BoardController.prototype.syncValidity = function () {
 
 module.exports = BoardController;
 
-},{"./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
+},{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
+"use strict";
+
 // NPM MODULES
 var $ = require( "jquery" );
 
@@ -190,11 +195,14 @@ function BoardView () {
   this.style = $( "<style>" ).appendTo( document.head );
   this.element
     // this handler emits change events when user enters data
-    .on( "input", "input", this.emit.bind( this, "change" ) )
+    .on( "input", "input", function ( evt ) {
+      var coord = evt.target.id.split( "-" );
+      this.emit( "ui-change", coord[0], coord[1], evt.target.value );
+    }.bind( this ) )
     // This handler lets the user navigate cells with:
     // ⌘+←, ⌘+↑, ⌘+→, ⌘+↓
     .on( "keydown", "input", function ( evt ) {
-      var prev, next, cell;
+      var prev, next;
       if ( evt.metaKey && DIR[evt.which] ) {
         evt.preventDefault();
         prev = evt.target.id.split( "-" ).map( Number );
@@ -265,13 +273,17 @@ BoardView.prototype.updateStyle = function ( validity ) {
 module.exports = BoardView;
 
 },{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js","jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js":[function(require,module,exports){
+"use strict";
+
+// APP MODULES
 var util = require( "./util" );
 var Emitter = require( "./emitter" );
 
+// MODULE CONSTANTS
 var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
 
-
+// MODULE HELPERS
 function validValue ( value ) {
   return value === null || (
     !isNaN( Number( value ) ) &&
@@ -294,6 +306,10 @@ function standardizeValue ( value ) {
   }
   return value;
 }
+
+// PRIMARY MODULE CLASS
+//
+// The Board model is the single source of truth for the state of the game.
 
 function Board ( board ) {
   this._board = board.map( util.sliceOne );
@@ -318,8 +334,15 @@ Board.prototype.set = function ( x, y, value ) {
   if ( y >= this._board.length || x >= this._board[0].length ) {
     throw new Error( "Attempting to set cell out of range" );
   }
-  this._board[y][x] = standardizeValue( value );
-  this.emit( "set", x, y, this.get( x, y ) );
+  var val = standardizeValue( value );
+  var prev = this.get( x, y );
+  if ( prev !== val ) {
+    this._board[y][x] = standardizeValue( value );
+    this.emit( "data-change", x, y, this.get( x, y ) );
+  }
+  if ( this.isComplete ) {
+    this.emit( "complete" );
+  }
   return this;
 };
 
@@ -428,6 +451,8 @@ Board.isFullyValid = function ( arr ) {
 module.exports = Board;
 
 },{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js":[function(require,module,exports){
+"use strict";
+
 var slice = require( "./util" ).slice;
 
 // Each method guards against this._events being undefined
@@ -490,35 +515,9 @@ Emitter.prototype.off = function ( name, method ) {
 
 module.exports = Emitter;
 
-},{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js":[function(require,module,exports){
-module.exports = function () {
-  return {
-    solution : [
-      [5,3,4,6,7,8,9,1,2],
-      [6,7,2,1,9,5,3,4,8],
-      [1,9,8,3,4,2,5,6,7],
-      [8,5,9,7,6,1,4,2,3],
-      [4,2,6,8,5,3,7,9,1],
-      [7,1,3,9,2,4,8,5,6],
-      [9,6,1,5,3,7,2,8,4],
-      [2,8,7,4,1,9,6,3,5],
-      [3,4,5,2,8,6,1,7,9]
-    ],
-    problem: [
-      [5,3,null,null,7,null,null,null,null],
-      [6,null,null,1,9,5,null,null,null],
-      [null,9,8,null,null,null,null,6,null],
-      [8,null,null,null,6,null,null,null,3],
-      [4,null,null,8,null,3,null,null,1],
-      [7,null,null,null,2,null,null,null,6],
-      [null,6,null,null,null,null,2,8,null],
-      [null,null,null,4,1,9,null,null,5],
-      [null,null,null,null,8,null,null,7,9]
-    ]
-  };
-};
+},{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js":[function(require,module,exports){
+"use strict";
 
-},{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js":[function(require,module,exports){
 function unique ( arr ) {
   return arr.reduce( function ( result, item ) {
     if ( result.indexOf( item ) === -1 ) {
@@ -539,10 +538,6 @@ function flatten ( arr ) {
 
 function identity ( obj ) {
   return obj;
-}
-
-function truthyOrNull ( obj ) {
-  return obj || obj === null;
 }
 
 function validValue ( value ) {

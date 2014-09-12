@@ -1,3 +1,5 @@
+"use strict";
+
 function unique ( arr ) {
   return arr.reduce( function ( result, item ) {
     if ( result.indexOf( item ) === -1 ) {
@@ -18,10 +20,6 @@ function flatten ( arr ) {
 
 function identity ( obj ) {
   return obj;
-}
-
-function truthyOrNull ( obj ) {
-  return obj || obj === null;
 }
 
 function validValue ( value ) {

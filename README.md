@@ -1,6 +1,7 @@
-# sudoku
+# sudoku [![Build Status](https://travis-ci.org/nickb1080/sudoku.svg)](https://travis-ci.org/nickb1080/sudoku)
 
 ## App Structure
+This app implements an event-driven MVC structure. This allows for sane management of game state, as well as loose coupling between components.
 
 ### `sudoku`
 This app exposes a single global object, `sudoku`. `sudoku` is responsible for creating new games, and handling the associated setup and teardown. It's primary method is `newGame()`, which creates a new random board, wires up a model, view, and controller, and inserts the view into the page. An alternate method, `newSolvedGame()` is also provided, which generates a fully solved board (this method builds the same solved board each time). The `sudoku` object is exposed for inspectability in the browser console; it could easily instead be private instead.
@@ -18,5 +19,12 @@ This app exposes a single global object, `sudoku`. `sudoku` is responsible for c
 `BoardController` is responsible for mediating the data flow between a view and a board. The implementation is fairly basic; simply, it updates a board model when changes occur in the UI view, and likewise updates the view when the model data changes. This allows the model and view to have no direct knowledge of the other.
 
 
-## Testing
-This app is fully tested.
+## Technologies Used
+
+### Browserify
+Browserify allows you to write modular client-side code with Node-style `require()`. This app uses `app/app.js` as the entry point; Browserify recursively resolves dependencies and bundles the code into a single file ()
+
+
+## Testing & Testling
+Testling is a dead simple abstraction layer on top of [PhantomJS](http://phantomjs.org/). With minimal configuration in `package.json`, it runs the test suite in a headless browser. Each method of each class is thoroughly tested; the continuous integration status can be viewed on [Travis CI](https://travis-ci.org/nickb1080/sudoku).
+

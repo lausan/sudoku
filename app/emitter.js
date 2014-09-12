@@ -1,3 +1,5 @@
+"use strict";
+
 var slice = require( "./util" ).slice;
 
 // Each method guards against this._events being undefined

@@ -1,5 +1,6 @@
-var should = require( "chai" ).should();
-var $ = require( "jquery" );
+"use strict";
+
+require( "chai" ).should();
 
 var fixtures = require( "./fixtures" )();
 var BoardController = require( "../app/board-controller" );
@@ -22,20 +23,28 @@ afterEach( function () {
 });
 
 describe( "event listening behavior", function () {
-  it( "Should respond to 'change' events on the view by updating the model", function () {
+  it( "Should respond to 'ui-change' events on the view by updating the model", function () {
     view.element.find( "input" ).eq( 0 ).val( 1 ).trigger( "input" );
     board.get( 0, 0 ).should.equal( 1 );
   });
 });
 
 describe( "instance methods", function () {
-  describe( "syncCell", function () {
+  describe( ".updateModel()", function () {
     it( "Should update the state of the model and view with the given value", function () {
-      ctrl.syncCell( 0, 0, 1 );
+      ctrl.updateModel( 0, 0, 1 );
       board.get( 0, 0 ).should.equal( 1 );
       view.element.find( "input" ).eq( 0 ).val().should.equal( "1" );
     });
   });
+
+  describe( ".updateView()", function () {
+    it( "Should update the state of the model and view with the given value", function () {
+      ctrl.updateView( 0, 0, 1 );
+      view.element.find( "input" ).eq( 0 ).val().should.equal( "1" );
+    });
+  });
+
   describe( "syncValidity", function () {
     it( "Should send validation information to the view", function () {
       ctrl.syncValidity();

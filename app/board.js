@@ -1,10 +1,14 @@
+"use strict";
+
+// APP MODULES
 var util = require( "./util" );
 var Emitter = require( "./emitter" );
 
+// MODULE CONSTANTS
 var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
 
-
+// MODULE HELPERS
 function validValue ( value ) {
   return value === null || (
     !isNaN( Number( value ) ) &&
@@ -27,6 +31,10 @@ function standardizeValue ( value ) {
   }
   return value;
 }
+
+// PRIMARY MODULE CLASS
+//
+// The Board model is the single source of truth for the state of the game.
 
 function Board ( board ) {
   this._board = board.map( util.sliceOne );
@@ -51,8 +59,15 @@ Board.prototype.set = function ( x, y, value ) {
   if ( y >= this._board.length || x >= this._board[0].length ) {
     throw new Error( "Attempting to set cell out of range" );
   }
-  this._board[y][x] = standardizeValue( value );
-  this.emit( "set", x, y, this.get( x, y ) );
+  var val = standardizeValue( value );
+  var prev = this.get( x, y );
+  if ( prev !== val ) {
+    this._board[y][x] = standardizeValue( value );
+    this.emit( "data-change", x, y, this.get( x, y ) );
+  }
+  if ( this.isComplete ) {
+    this.emit( "complete" );
+  }
   return this;
 };
 

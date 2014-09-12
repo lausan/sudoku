@@ -1,4 +1,6 @@
-var should = require( "chai" ).should();
+"use strict";
+
+require( "chai" ).should();
 var $ = require( "jquery" );
 
 var Board = require( "../app/board" );
@@ -15,9 +17,9 @@ beforeEach( function () {
 });
 
 describe( "event listening behavior", function () {
-  it( "should emit a 'change' event when a descendant input has an 'input' event", function () {
+  it( "should emit a 'ui-change' event when a descendant input has an 'input' event", function () {
     var bool = false;
-    view.on( "change", function () {
+    view.on( "ui-change", function () {
       bool = true;
     });
     view.element.find( "input" ).eq( 20 ).trigger( "input" );

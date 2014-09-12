@@ -1,4 +1,6 @@
-var should = require( "chai" ).should();
+"use strict";
+
+require( "chai" ).should();
 
 var Board = require( "../app/board" );
 var fixtures = require( "./fixtures" )();
@@ -137,9 +139,9 @@ describe( "instance methods", function () {
   describe( ".isComplete()", function () {
     it( "Should return true if the board is solved, otherwise false", function () {
       solved.isComplete().should.equal( true );
-      unsolved.isComplete().should.equal( false );
       solved.set( 0, 0, 1);
       solved.isComplete().should.equal( false );
+      unsolved.isComplete().should.equal( false );
     });
   });
 

@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "watchify ./app/app.js -s sudoku -o ./app.js",
     "build": "browserify ./app/app.js -s sudoku -o ./app.js",
-    "test": "testling"
+    "test": "npm run lint && testling",
+    "lint": "jshint app/*.js && jshint test/*.js"
   },
   "author": "",
   "license": "MIT",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "chai": "^1.9.1",
     "function-bind": "^1.0.0",
+    "jslint": "^0.6.4",
     "mocha": "^1.21.4",
     "testling": "^1.7.0",
     "watchify": "^1.0.2"

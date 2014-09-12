@@ -1,6 +1,7 @@
+"use strict";
+
 // APP MODULES
 var Emitter = require( "./emitter" );
-var BoardView = require( "./board-view" );
 
 // PRIMARY MODULE CLASS
 
@@ -9,21 +10,29 @@ var BoardView = require( "./board-view" );
 
 function BoardController ( board, view ) {
   this.board = board;
-  this.view = view || new BoardView();
+  this.view = view;
   this.view.render( this.board.asArray() );
-  this.view.on( "change", function ( evt ) {
-    var coord = evt.target.id.split( "-" );
-    this.syncCell( coord[0], coord[1], evt.target.value );
+  this.view.on( "ui-change", function ( x, y, value ) {
+    this.updateModel( x, y, value );
+  }.bind( this ) );
+
+  this.board.on( "data-change", function ( x, y, value ) {
+    this.updateView( x, y, value );
     this.syncValidity();
   }.bind( this ) );
+
+  this.view.render( this.board.asArray() );
 }
 
 BoardController.prototype = Object.create( Emitter.prototype );
 BoardController.prototype.constructor = BoardController;
 
-BoardController.prototype.syncCell = function ( x, y, value ) {
+BoardController.prototype.updateModel = function ( x, y, value ) {
   this.board.set( x, y, value );
-  this.view.updateCell( x, y, this.board.get( x, y ) );
+};
+
+BoardController.prototype.updateView = function ( x, y, value ) {
+  this.view.updateCell( x, y, value );
 };
 
 BoardController.prototype.syncValidity = function () {

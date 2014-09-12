@@ -1,17 +1,14 @@
+"use strict";
+
 // board generator
 var _sudoku = require( "sudoku" );
 var $ = require( "jquery" );
 
-var fixtures = require( "./fixture" )();
-
 var Board = require( "./board" );
 var BoardView = require( "./board-view" );
 var BoardController = require( "./board-controller" );
-var solution = fixtures.solution;
-var problem = fixtures.problem;
 
 var sudoku = ( function () {
-  var body = $( "body" );
   var main = $( ".main" );
   var won = $( ".won" );
 
@@ -52,13 +49,13 @@ var sudoku = ( function () {
       var board = new Board( b || makeBoard() );
       var view = new BoardView();
       var ctrl = new BoardController( board, view );
-      main.append( view.element );
       // _game is exposed for debugging and inspection; doesn't need to be
       this._game = {
         board: board,
         view: view,
         ctrl: ctrl
       };
+      main.append( view.element );
       board.on( "complete", onWin );
       board.emit( "set" );
     },
@@ -78,10 +75,7 @@ var sudoku = ( function () {
   };
 })();
 
-// to make this entirely encapsulated we could just do:
-//
-// sudoku.newGame();
-//
-// ... and export nothing
+sudoku.newGame();
 
+// exposing sudoku object for inspection
 module.exports = sudoku;

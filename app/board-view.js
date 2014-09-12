@@ -1,3 +1,5 @@
+"use strict";
+
 // NPM MODULES
 var $ = require( "jquery" );
 
@@ -61,11 +63,14 @@ function BoardView () {
   this.style = $( "<style>" ).appendTo( document.head );
   this.element
     // this handler emits change events when user enters data
-    .on( "input", "input", this.emit.bind( this, "change" ) )
+    .on( "input", "input", function ( evt ) {
+      var coord = evt.target.id.split( "-" );
+      this.emit( "ui-change", coord[0], coord[1], evt.target.value );
+    }.bind( this ) )
     // This handler lets the user navigate cells with:
     // ⌘+←, ⌘+↑, ⌘+→, ⌘+↓
     .on( "keydown", "input", function ( evt ) {
-      var prev, next, cell;
+      var prev, next;
       if ( evt.metaKey && DIR[evt.which] ) {
         evt.preventDefault();
         prev = evt.target.id.split( "-" ).map( Number );

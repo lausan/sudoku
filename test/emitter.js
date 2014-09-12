@@ -1,3 +1,5 @@
+"use strict";
+
 var should = require( "chai" ).should();
 
 var Emitter = require( "../app/emitter" );
