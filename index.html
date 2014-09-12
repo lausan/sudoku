@@ -9,7 +9,7 @@
   <script>
     var b = new sudoku.Board(sudoku.problem);
     var v = new sudoku.BoardView(b);
-    v.render();
+    var c = new sudoku.BoardController(b, v);
     document.body.appendChild(v.element[0]);
   </script>
 </body>

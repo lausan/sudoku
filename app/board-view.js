@@ -1,14 +1,20 @@
+// npm modules
 var $ = require( "jquery" );
 
+// app modules
 var util = require( "./util" );
-
 var Emitter = require( "./emitter" );
 
+// module constants
 var BOARD_SIZE = 9;
-var ENTER = 13;
+var SUB_BOARD_SIZE = 3;
+var UP;
+var DOWN;
+var LEFT;
+var RIGHT;
+var INVALID_STYLE = "{ background-color: rgba(255, 0, 0, .2); }";
 
-var INVALID_STYLE = "{ background: rgba(1, 0, 0, .2); }";
-
+// module helpers
 var counter = (function() {
   var num = 0;
   return function () {
@@ -16,40 +22,60 @@ var counter = (function() {
   };
 })();
 
-function flatIndexFromXY ( x, y ) {
-  return y * BOARD_SIZE + x - 1;
+function calculateSubBoard ( x, y ) {
+  return Math.floor( x / SUB_BOARD_SIZE ) * SUB_BOARD_SIZE + Math.floor( y / SUB_BOARD_SIZE );
 }
 
-function BoardView ( board ) {
-  this.board = board;
+function makeLi ( x, y ) {
+  return [
+    "<li class='cell column-",
+    x,
+    " row-",
+    y,
+    " sub-board-",
+    calculateSubBoard( x, y ),
+    "'>"
+  ].join( "" );
+}
+
+function makeInput ( x, y, value ) {
+  return [
+    "<input maxlength='1' class='cell--input' id='",
+    x,
+    "-",
+    y,
+    "' type='tel' value='",
+    value,
+    "'>"
+  ].join( "" );
+}
+
+// primary module class
+
+// constructor & inheritance boilerplate
+function BoardView () {
   this.element = $( "<div class='board'>" );
-  this.element
-    .on( "change", "input", this.emit.bind( this, "change" ) )
-    .on( "change", "input", function ( evt ) {
-      // var onOff = util.validValue( Number( this.value ) );
-      // $( this ).parent().toggleClass( "cell--invalid", !onOff );
-    });
+  this.style = $( "<style>" ).appendTo( document.head );
+  this.element.on( "change", "input", this.emit.bind( this, "change" ) );
 }
 
 BoardView.prototype = Object.create( Emitter.prototype );
 BoardView.prototype.constructor = BoardView;
 
+// instance Methods
 BoardView.prototype.setBoard = function ( board ) {
   this.board = board;
 };
 
-BoardView.prototype.render = function () {
+BoardView.prototype.render = function ( data ) {
   var html = "";
   var value;
-  if ( !this.board ) {
-    throw new Error( "No board registered for this view" );
-  }
-  for ( var i = 0; i < BOARD_SIZE; i++ ) {
+  for ( var y = 0; y < BOARD_SIZE; y++ ) {
     html += "<ul class='row'>";
-    for ( var j = 0; j < BOARD_SIZE; j++ ) {
-      value = this.board.get( j, i ) || "";
-      html += "<li id='" + j + "-" + i + "' class='cell column-" + j + " row-" + i + "'>";
-      html += "<input maxlength='1' class='cell--input' type='tel' value='" + value + "'>";
+    for ( var x = 0; x < BOARD_SIZE; x++ ) {
+      value = data[y][x] || "";
+      html += makeLi( x, y );
+      html += makeInput( x, y, value );
       html += "</li>";
     }
     html += "</ul>";
@@ -65,8 +91,24 @@ BoardView.prototype.cellAt = function ( x, y ) {
     .eq( x );
 };
 
-BoardView.prototype.update = function ( x, y, value, quiet ) {
+BoardView.prototype.updateCell = function ( x, y, value ) {
   var input = this.cellAt( x, y ).children().val( value );
+};
+
+BoardView.prototype.updateStyle = function ( validity ) {
+  var selectors = Object.keys( validity ).reduce( function ( selectors, key ) {
+    return selectors.concat(
+      validity[key]
+        .map( function ( bool, i ) {
+          return bool ? false : "." + key + "-" + i;
+        })
+        .filter( util.identity )
+    );
+  }, [] );
+  var style = selectors.length ?
+    selectors.join( ",\n" ) + INVALID_STYLE :
+    " ";
+  this.style.html( style );
 };
 
 module.exports = BoardView;

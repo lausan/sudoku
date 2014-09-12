@@ -62,7 +62,6 @@ Board.prototype.subBoardValues = function ( x, y ) {
   var endX = startX + SUB_BOARD_SIZE;
   var startY = y * SUB_BOARD_SIZE;
   var endY = startY + SUB_BOARD_SIZE;
-
   for ( var i = startX; i < endX; i++ ) {
     for ( var j = startY; j < endY; j++ ) {
       values.push( this.get( i, j ) );
@@ -98,15 +97,33 @@ Board.prototype.mapSubBoards = function ( fn ) {
   return results;
 };
 
-Board.prototype.isComplete = function ( fn ) {
+Board.prototype.isComplete = function () {
   return this.mapRows( Board.isFullyValid )
     .concat( this.mapColumns( Board.isFullyValid ) )
     .concat( this.mapSubBoards( Board.isFullyValid ) )
     .every( util.identity );
 };
 
+Board.prototype.asArray = function () {
+  return this._board.map( function ( row ) {
+    return row.slice();
+  });
+};
+
 Board.prototype.flatten = function () {
   return util.flatten( this._board );
+};
+
+Board.prototype.rowValidity = function () {
+  return this.mapRows( Board.isPartiallyValid );
+};
+
+Board.prototype.columnValidity = function () {
+  return this.mapColumns( Board.isPartiallyValid );
+};
+
+Board.prototype.subBoardValidity = function () {
+  return this.mapSubBoards( Board.isPartiallyValid );
 };
 
 // Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9, or falsy

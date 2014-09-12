@@ -8,6 +8,7 @@ $board_width: 9 * $cell_width
 .board
   box-sizing: content-box
   width: $board_width
+  max-width: 100%
   border: $sub_board_border
   .row
     list-style-type: none
@@ -20,7 +21,7 @@ $board_width: 9 * $cell_width
 
   .cell
     display: inline-block
-    width: $cell_width
+    width: 11.11%
     text-align: center
     border: $cell_border
   .cell:nth-of-type(3n)

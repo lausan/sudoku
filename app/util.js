@@ -27,9 +27,19 @@ function validValue ( value ) {
   );
 }
 
+function demethodize ( method ) {
+  return Function.prototype.call.bind( method );
+}
+
+function opposite ( value ) {
+  return !value;
+}
+
 module.exports = {
   unique: unique,
   flatten: flatten,
   identity: identity,
-  validValue: validValue
+  validValue: validValue,
+  slice: demethodize( [].slice ),
+  opposite: opposite
 };
