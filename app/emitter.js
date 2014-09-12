@@ -1,11 +1,10 @@
-var slice = Function.call.bind( [].slice );
+var slice = require( "./util" ).slice;
 
 // Each method guards against this._events being undefined
 // Allows us to avoid constructor logic
 // and thus can omit `Emitter.call(this)` when subtyping
 //
 function Emitter () {}
-
 
 // Add an event handler for a given event name
 Emitter.prototype.on = function ( name, method ) {
@@ -19,7 +18,9 @@ Emitter.prototype.on = function ( name, method ) {
   return this;
 };
 
-// Arguments after first are applied to the handlers
+// Arguments after first are applied to the handlers.
+// This implementation allows the same handler to be
+// added more than once.
 Emitter.prototype.emit = function ( name ) {
   var args;
   if ( !this._events ) {

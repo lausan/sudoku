@@ -4,24 +4,15 @@ var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
 
 function validValue ( value ) {
-  return (
-    Number( value ) === value &&
-    value % 1 === 0 &&
-    value > 0 &&
-    value < 10
+  return value === null || (
+    !isNaN( Number( value ) ) &&
+    Number( value ) % 1 === 0 &&
+    Number( value ) > 0 &&
+    Number( value ) < 10
   );
 }
 
 function Board ( board ) {
-  if ( board == null ) {
-    board = [];
-    for ( var i = 0; i < BOARD_SIZE; i++ ) {
-      board.push( new Array( BOARD_SIZE ) );
-      // for ( var j = 0; j < BOARD_SIZE; j++ ) {
-      //   board[i].push( "" );
-      // }
-    }
-  }
   this._board = board;
 }
 
@@ -39,7 +30,7 @@ Board.prototype.set = function ( x, y, value ) {
   if ( !validValue( value ) ) {
     throw new Error( "Attempting to set invalid value in board" );
   }
-  this._board[y][x] = value;
+  this._board[y][x] = value === null ? value : Number( value );
   return this;
 };
 
@@ -70,6 +61,16 @@ Board.prototype.subBoardValues = function ( x, y ) {
   return values;
 };
 
+Board.prototype._mapRowsOrColumns = function ( fn, which ) {
+  var method = which === "rows" ? "rowValues" : "columnValues";
+  var results = [];
+  for ( var i = 0; i < BOARD_SIZE; i++ ) {
+    results.push( fn( this[method]( i ) ) );
+  }
+  return results;
+}
+
+// Calls `fn` with each row and returns the result.
 Board.prototype.mapRows = function ( fn ) {
   var results = [];
   for ( var i = 0; i < BOARD_SIZE; i++ ) {
@@ -78,6 +79,7 @@ Board.prototype.mapRows = function ( fn ) {
   return results;
 };
 
+// Calls `fn` with each column and returns the result.
 Board.prototype.mapColumns = function ( fn ) {
   var results = [];
   for ( var i = 0; i < BOARD_SIZE; i++ ) {
@@ -86,6 +88,7 @@ Board.prototype.mapColumns = function ( fn ) {
   return results;
 };
 
+// Calls `fn` with each sub-board and returns the result.
 Board.prototype.mapSubBoards = function ( fn ) {
   var results = [];
   var max = BOARD_SIZE / SUB_BOARD_SIZE;
@@ -97,6 +100,7 @@ Board.prototype.mapSubBoards = function ( fn ) {
   return results;
 };
 
+// Returns whether or not the board is in a valid solution state
 Board.prototype.isComplete = function () {
   return this.mapRows( Board.isFullyValid )
     .concat( this.mapColumns( Board.isFullyValid ) )
@@ -104,24 +108,29 @@ Board.prototype.isComplete = function () {
     .every( util.identity );
 };
 
+// Returns a copy of the board's underlying 2d array
 Board.prototype.asArray = function () {
   return this._board.map( function ( row ) {
     return row.slice();
   });
 };
 
+// Returns a flattened version of the underlying 2d array
 Board.prototype.flatten = function () {
   return util.flatten( this._board );
 };
 
+// Returns an array with the validity of each row
 Board.prototype.rowValidity = function () {
   return this.mapRows( Board.isPartiallyValid );
 };
 
+// Returns an array with the validity of each column
 Board.prototype.columnValidity = function () {
   return this.mapColumns( Board.isPartiallyValid );
 };
 
+// Returns an array with the validity of each sub-board
 Board.prototype.subBoardValidity = function () {
   return this.mapSubBoards( Board.isPartiallyValid );
 };

@@ -10,8 +10,15 @@ module.exports = {
 };
 
 },{"./board":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js","./board-controller":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js","./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./fixture":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js":[function(require,module,exports){
+
+// APP MODULES
 var Emitter = require( "./emitter" );
 var BoardView = require( "./board-view" );
+
+// PRIMARY MODULE CLASS
+
+// BoardController mediates the interaction between a Board model
+// and a BoardView
 
 function BoardController ( board, view ) {
   this.board = board;
@@ -19,21 +26,19 @@ function BoardController ( board, view ) {
   this.view.render( this.board.asArray() );
   this.view.on( "change", function ( evt ) {
     var coord = evt.target.id.split( "-" );
-    console.log( coord );
     this.syncCell( coord[0], coord[1], evt.target.value );
     this.syncValidity();
   }.bind( this ) );
+
 }
 
 BoardController.prototype = Object.create( Emitter.prototype );
 BoardController.prototype.constructor = BoardController;
 
+//
 BoardController.prototype.syncCell = function ( x, y, value ) {
-  console.log( x, y );
-  if ( value ) {
-    this.board.set( x, y, Number( value ) );
-  }
-  this.view.updateCell( x, y, value );
+  this.board.set( x, y, value || null );
+  this.view.updateCell( x, y, this.board.get( x, y ) );
 };
 
 BoardController.prototype.syncValidity = function () {
@@ -47,34 +52,35 @@ BoardController.prototype.syncValidity = function () {
 module.exports = BoardController;
 
 },{"./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
-// npm modules
+// NPM MODULES
 var $ = require( "jquery" );
 
-// app modules
+// APP MODULES
 var util = require( "./util" );
 var Emitter = require( "./emitter" );
 
-// module constants
+// MODULE CONSTANTS
 var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
-var UP;
-var DOWN;
-var LEFT;
-var RIGHT;
+var DIR = {
+  37: [-1, 0], // keycode left
+  38: [0, -1], // keycode up
+  39: [1, 0],  // keycode right
+  40: [0, 1]   // keycode down
+};
 var INVALID_STYLE = "{ background-color: rgba(255, 0, 0, .2); }";
 
-// module helpers
-var counter = (function() {
-  var num = 0;
-  return function () {
-    return ++num;
-  };
-})();
+// MODULE HELPERS
 
+// calculates which "sub-board" a cell falls in
+// assuming sub-boards are indexed left to right
+// and top to bottom.
 function calculateSubBoard ( x, y ) {
   return Math.floor( x / SUB_BOARD_SIZE ) * SUB_BOARD_SIZE + Math.floor( y / SUB_BOARD_SIZE );
 }
 
+// returns the HTML for a cell <li> element
+// given its x,y location
 function makeLi ( x, y ) {
   return [
     "<li class='cell column-",
@@ -87,6 +93,8 @@ function makeLi ( x, y ) {
   ].join( "" );
 }
 
+// returns the HTML for an <input> element given its
+// x,y location and it's initial value
 function makeInput ( x, y, value ) {
   return [
     "<input maxlength='1' class='cell--input' id='",
@@ -99,23 +107,37 @@ function makeInput ( x, y, value ) {
   ].join( "" );
 }
 
-// primary module class
+// PRIMARY MODULE CLASS
 
 // constructor & inheritance boilerplate
 function BoardView () {
   this.element = $( "<div class='board'>" );
   this.style = $( "<style>" ).appendTo( document.head );
-  this.element.on( "change", "input", this.emit.bind( this, "change" ) );
+  this.element
+    .on( "change", "input", this.emit.bind( this, "change" ) )
+    // This handler lets the user navigate cells with:
+    // ⌘+←, ⌘+↑, ⌘+→, ⌘+↓
+    .on( "keydown", "input", function ( evt ) {
+      var prev, next, cell;
+      if ( evt.metaKey && DIR[evt.which] ) {
+        evt.preventDefault();
+        prev = evt.target.id.split( "-" ).map( Number );
+        next = util.addArrays( prev, DIR[evt.which] );
+        if ( next[0] > -1 && next[0] < 10 && next[1] >-1 && next[1] < 10 ) {
+          this.cellAt( next[0], next[1] ).find( "input" ).focus().select();
+        }
+      }
+    }.bind( this ) );
 }
 
 BoardView.prototype = Object.create( Emitter.prototype );
 BoardView.prototype.constructor = BoardView;
 
-// instance Methods
-BoardView.prototype.setBoard = function ( board ) {
-  this.board = board;
-};
 
+
+// INSTANCE METHODS
+
+// Generate the HTML for a given board
 BoardView.prototype.render = function ( data ) {
   var html = "";
   var value;
@@ -132,6 +154,7 @@ BoardView.prototype.render = function ( data ) {
   this.element.html( html );
 };
 
+// Returns a jQuery selection of the cell at the given coordinates
 BoardView.prototype.cellAt = function ( x, y ) {
   return this.element
     .find( ".row" )
@@ -140,11 +163,15 @@ BoardView.prototype.cellAt = function ( x, y ) {
     .eq( x );
 };
 
+// Updates the value of a cell at the given coordinates
 BoardView.prototype.updateCell = function ( x, y, value ) {
-  var input = this.cellAt( x, y ).children().val( value );
+  this.cellAt( x, y ).children().val( value );
 };
 
+// Updates the board's styles to reflect invalid
+// rows, columns or sub-boards
 BoardView.prototype.updateStyle = function ( validity ) {
+  var style = "";
   var selectors = Object.keys( validity ).reduce( function ( selectors, key ) {
     return selectors.concat(
       validity[key]
@@ -154,9 +181,9 @@ BoardView.prototype.updateStyle = function ( validity ) {
         .filter( util.identity )
     );
   }, [] );
-  var style = selectors.length ?
-    selectors.join( ",\n" ) + INVALID_STYLE :
-    " ";
+  if ( selectors.length ) {
+    style = selectors.join( ",\n" ) + INVALID_STYLE;
+  }
   this.style.html( style );
 };
 
@@ -169,24 +196,15 @@ var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
 
 function validValue ( value ) {
-  return (
-    Number( value ) === value &&
-    value % 1 === 0 &&
-    value > 0 &&
-    value < 10
+  return value === null || (
+    !isNaN( Number( value ) ) &&
+    Number( value ) % 1 === 0 &&
+    Number( value ) > 0 &&
+    Number( value ) < 10
   );
 }
 
 function Board ( board ) {
-  if ( board == null ) {
-    board = [];
-    for ( var i = 0; i < BOARD_SIZE; i++ ) {
-      board.push( new Array( BOARD_SIZE ) );
-      // for ( var j = 0; j < BOARD_SIZE; j++ ) {
-      //   board[i].push( "" );
-      // }
-    }
-  }
   this._board = board;
 }
 
@@ -204,7 +222,7 @@ Board.prototype.set = function ( x, y, value ) {
   if ( !validValue( value ) ) {
     throw new Error( "Attempting to set invalid value in board" );
   }
-  this._board[y][x] = value;
+  this._board[y][x] = value === null ? value : Number( value );
   return this;
 };
 
@@ -235,6 +253,16 @@ Board.prototype.subBoardValues = function ( x, y ) {
   return values;
 };
 
+Board.prototype._mapRowsOrColumns = function ( fn, which ) {
+  var method = which === "rows" ? "rowValues" : "columnValues";
+  var results = [];
+  for ( var i = 0; i < BOARD_SIZE; i++ ) {
+    results.push( fn( this[method]( i ) ) );
+  }
+  return results;
+}
+
+// Calls `fn` with each row and returns the result.
 Board.prototype.mapRows = function ( fn ) {
   var results = [];
   for ( var i = 0; i < BOARD_SIZE; i++ ) {
@@ -243,6 +271,7 @@ Board.prototype.mapRows = function ( fn ) {
   return results;
 };
 
+// Calls `fn` with each column and returns the result.
 Board.prototype.mapColumns = function ( fn ) {
   var results = [];
   for ( var i = 0; i < BOARD_SIZE; i++ ) {
@@ -251,6 +280,7 @@ Board.prototype.mapColumns = function ( fn ) {
   return results;
 };
 
+// Calls `fn` with each sub-board and returns the result.
 Board.prototype.mapSubBoards = function ( fn ) {
   var results = [];
   var max = BOARD_SIZE / SUB_BOARD_SIZE;
@@ -262,6 +292,7 @@ Board.prototype.mapSubBoards = function ( fn ) {
   return results;
 };
 
+// Returns whether or not the board is in a valid solution state
 Board.prototype.isComplete = function () {
   return this.mapRows( Board.isFullyValid )
     .concat( this.mapColumns( Board.isFullyValid ) )
@@ -269,24 +300,29 @@ Board.prototype.isComplete = function () {
     .every( util.identity );
 };
 
+// Returns a copy of the board's underlying 2d array
 Board.prototype.asArray = function () {
   return this._board.map( function ( row ) {
     return row.slice();
   });
 };
 
+// Returns a flattened version of the underlying 2d array
 Board.prototype.flatten = function () {
   return util.flatten( this._board );
 };
 
+// Returns an array with the validity of each row
 Board.prototype.rowValidity = function () {
   return this.mapRows( Board.isPartiallyValid );
 };
 
+// Returns an array with the validity of each column
 Board.prototype.columnValidity = function () {
   return this.mapColumns( Board.isPartiallyValid );
 };
 
+// Returns an array with the validity of each sub-board
 Board.prototype.subBoardValidity = function () {
   return this.mapSubBoards( Board.isPartiallyValid );
 };
@@ -308,14 +344,13 @@ Board.isFullyValid = function ( arr ) {
 module.exports = Board;
 
 },{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js":[function(require,module,exports){
-var slice = Function.call.bind( [].slice );
+var slice = require( "./util" ).slice;
 
 // Each method guards against this._events being undefined
 // Allows us to avoid constructor logic
 // and thus can omit `Emitter.call(this)` when subtyping
 //
 function Emitter () {}
-
 
 // Add an event handler for a given event name
 Emitter.prototype.on = function ( name, method ) {
@@ -329,7 +364,9 @@ Emitter.prototype.on = function ( name, method ) {
   return this;
 };
 
-// Arguments after first are applied to the handlers
+// Arguments after first are applied to the handlers.
+// This implementation allows the same handler to be
+// added more than once.
 Emitter.prototype.emit = function ( name ) {
   var args;
   if ( !this._events ) {
@@ -369,7 +406,7 @@ Emitter.prototype.off = function ( name, method ) {
 
 module.exports = Emitter;
 
-},{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js":[function(require,module,exports){
+},{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js":[function(require,module,exports){
 module.exports = function () {
   return {
     solution : [
@@ -435,13 +472,20 @@ function opposite ( value ) {
   return !value;
 }
 
+function addArrays ( arr1, arr2 ) {
+  return arr1.map( function ( item, i ) {
+    return item + arr2[i];
+  });
+}
+
 module.exports = {
   unique: unique,
   flatten: flatten,
   identity: identity,
   validValue: validValue,
   slice: demethodize( [].slice ),
-  opposite: opposite
+  opposite: opposite,
+  addArrays: addArrays
 };
 
 },{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js":[function(require,module,exports){

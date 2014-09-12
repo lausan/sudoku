@@ -35,11 +35,18 @@ function opposite ( value ) {
   return !value;
 }
 
+function addArrays ( arr1, arr2 ) {
+  return arr1.map( function ( item, i ) {
+    return item + arr2[i];
+  });
+}
+
 module.exports = {
   unique: unique,
   flatten: flatten,
   identity: identity,
   validValue: validValue,
   slice: demethodize( [].slice ),
-  opposite: opposite
+  opposite: opposite,
+  addArrays: addArrays
 };

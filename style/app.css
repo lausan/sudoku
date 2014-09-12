@@ -3,6 +3,10 @@
 *:after {
   box-sizing: border-box; }
 
+body {
+  font-family: "Avenir Next", "Avenir", sans-serif;
+  color: #333333; }
+
 .board {
   box-sizing: content-box;
   width: 27rem;
@@ -20,14 +24,14 @@
     display: inline-block;
     width: 11.11%;
     text-align: center;
-    border: 1px solid #333333; }
+    border: 1px solid #333333;
+    transition: background-color 0.2s ease-in-out; }
   .board .cell:nth-of-type(3n) {
     border-right: 3px solid #333333; }
   .board .cell:last-of-type {
     border-right-width: 1px; }
-  .board .cell-invalid {
-    background: red; }
   .board .cell--input {
+    font: inherit;
     max-width: 3rem;
     border: none;
     padding: 0;
