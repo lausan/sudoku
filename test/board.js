@@ -1,7 +1,7 @@
 var should = require( "chai" ).should();
 
 var Board = require( "../app/board" );
-var fixtures = require( "../app/fixture" )();
+var fixtures = require( "./fixtures" )();
 
 var unsolved;
 var solved;

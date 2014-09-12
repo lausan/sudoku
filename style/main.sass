@@ -1,3 +1,35 @@
+$cell_width: 3rem
+$board_width: 9 * $cell_width
+
 body
   font-family: "Avenir Next", "Avenir", sans-serif
   color: #333
+  margin: 0
+
+.page-header
+  background: #2980b9
+  color: #fff
+  text-align: center
+  h1
+    margin: 0
+    padding: .5rem
+  ul
+    list-style-type: none
+    padding: .5rem
+    margin: 0
+  li
+    display: inline-block
+    &:not(:last-of-type)
+      margin-right: 1rem
+  a
+    color: white
+
+.main
+  margin: 1rem auto
+  width: $board_width
+  max-width: 100%
+  max-width: -webkit-calc( 100% - 2rem )
+  max-width: calc( 100% - 2rem )
+
+.block
+  display: block

@@ -1,6 +1,7 @@
 var should = require( "chai" ).should();
 var $ = require( "jquery" );
-var fixtures = require( "../app/fixture" )();
+
+var fixtures = require( "./fixtures" )();
 var BoardController = require( "../app/board-controller" );
 var Board = require( "../app/board" );
 var BoardView = require( "../app/board-view" );

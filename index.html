@@ -5,21 +5,30 @@
   <link rel="stylesheet" href="./style/app.css">
 </head>
 <body>
-  <header>
+  <header class="page-header">
     <h1>Sudoku</h1>
-    <span class="block center uppercase">
-      <a href="http://github.com/nickb1080/sudoku">
-        Source
-      </a>
-    </span>
+    <nav>
+      <ul>
+        <li>
+          <a href="http://github.com/nickb1080/sudoku">Source</a>
+        </li>
+        <li>
+          <a href="about.html">About</a>
+        </li>
+      </ul>
+    </nav>
   </header>
+
+  <div class="main">
+  </div>
 
   <script src="app.js"></script>
   <script>
     var b = new sudoku.Board(sudoku.solution);
     var v = new sudoku.BoardView(b);
     var c = new sudoku.BoardController(b, v);
-    document.body.appendChild(v.element[0]);
+
+    document.querySelector( ".main" ).appendChild( v.element[0] );
   </script>
 </body>
 </html>

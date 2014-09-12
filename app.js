@@ -123,7 +123,6 @@ function BoardView () {
         next = util.addArrays( prev, DIR[evt.which] );
         if ( next[0] > -1 && next[0] < 10 && next[1] >-1 && next[1] < 10 ) {
           this.cellAt( next[0], next[1] ).find( "input" ).focus().select();
-          console.log( document.activeElement.tagName );
         }
       }
     }.bind( this ) );
