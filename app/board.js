@@ -105,6 +105,10 @@ Board.prototype.isComplete = function ( fn ) {
     .every( _.identity );
 };
 
+Board.prototype.flatten = function () {
+  return _.flatten( this._board );
+};
+
 // Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9
 Board.isPartiallyValid = function ( arr ) {
   return _.unique( arr ).length === arr.length &&

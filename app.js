@@ -10,25 +10,41 @@ module.exports = {
 
 },{"./board":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js","./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./fixture":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
 var $ = require( "jquery" );
+var Emitter = require( "./emitter" );
+
+var BOARD_SIZE = 9;
+var ENTER = 13;
+
+function flatIndexFromXY ( x, y ) {
+  return y * BOARD_SIZE + x - 1;
+}
 
 function BoardView ( board ) {
-  this.boardInstance = board;
+  this.board = board;
   this.element = $( "<div class='board'>" );
-  this.element.on( "change", function ( evt ) {
-    console.log( evt );
-  });
-  this.render();
+  this._inputs = $();
+  this.element.on( "change", "input", this.emit.bind( this, "change" ) );
 }
+
+BoardView.prototype = Object.create( Emitter.prototype );
+BoardView.prototype.constructor = BoardView;
+
+BoardView.prototype.setBoard = function ( board ) {
+  this.board = board;
+};
 
 BoardView.prototype.render = function () {
   var html = "";
   var value;
-  for ( var i = 0; i < this.boardInstance._board.length; i++ ) {
+  if ( !this.board ) {
+    throw new Error( "No board registered for this view" );
+  }
+  for ( var i = 0; i < BOARD_SIZE; i++ ) {
     html += "<ul class='row'>";
-    for ( var j = 0; j < this.boardInstance._board[i].length; j++ ) {
-      value = this.boardInstance.get( j, i ) || "";
-      html += "<li id='" + j + "-" + i + "' class='cell'>";
-      html += "<input class='cell--input' type='tel' value='" + value + "'>";
+    for ( var j = 0; j < BOARD_SIZE; j++ ) {
+      value = this.board.get( j, i ) || "";
+      html += "<li id='" + j + "-" + i + "' class='cell column-" + j + " row-" + i + "'>";
+      html += "<input maxlength='1' class='cell--input' type='tel' value='" + value + "'>";
       html += "</li>";
     }
     html += "</ul>";
@@ -36,9 +52,21 @@ BoardView.prototype.render = function () {
   this.element.html( html );
 };
 
+BoardView.prototype.cellAt = function ( x, y ) {
+  return this.element
+    .find( ".row" )
+    .eq( y )
+    .find( ".cell" )
+    .eq( x );
+};
+
+BoardView.prototype.update = function ( x, y, value, quiet ) {
+  var input = this.cellAt( x, y ).children().val( value );
+};
+
 module.exports = BoardView;
 
-},{"jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js":[function(require,module,exports){
+},{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js":[function(require,module,exports){
 var _ = require( "lodash" );
 
 var BOARD_SIZE = 9;
@@ -146,6 +174,10 @@ Board.prototype.isComplete = function ( fn ) {
     .every( _.identity );
 };
 
+Board.prototype.flatten = function () {
+  return _.flatten( this._board );
+};
+
 // Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9
 Board.isPartiallyValid = function ( arr ) {
   return _.unique( arr ).length === arr.length &&
@@ -161,7 +193,69 @@ Board.isFullyValid = function ( arr ) {
 
 module.exports = Board;
 
-},{"lodash":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/lodash/dist/lodash.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js":[function(require,module,exports){
+},{"lodash":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/lodash/dist/lodash.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js":[function(require,module,exports){
+var slice = Function.call.bind( [].slice );
+
+// Each method guards against this._events being undefined
+// Allows us to avoid constructor logic
+// and thus can omit `Emitter.call(this)` when subtyping
+//
+function Emitter () {}
+
+
+// Add an event handler for a given event name
+Emitter.prototype.on = function ( name, method ) {
+  if ( !this._events ) {
+    this._events = {};
+  }
+  if ( !this._events[name] ) {
+    this._events[name] = [];
+  }
+  this._events[name].push( method );
+  return this;
+};
+
+// Arguments after first are applied to the handlers
+Emitter.prototype.emit = function ( name ) {
+  var args;
+  if ( !this._events ) {
+    this._events = {};
+  }
+  if ( this._events[name] ) {
+    args = slice( arguments, 1 );
+    this._events[name].forEach( function ( method ) {
+      method.apply( this, args );
+    }.bind( this ) );
+  }
+  return this;
+};
+
+// Called without arguments: removes all handlers
+// Called with name argument: removes all handlers for name
+// Called with name and method: removes all handlers === method for name
+Emitter.prototype.off = function ( name, method ) {
+  var i;
+  if ( !this._events ) {
+    this._events = {};
+  }
+  if ( arguments.length === 0 ) {
+    this._events = {};
+  } else if ( arguments.length === 1 ) {
+    this._events[name] = [];
+  } else {
+    if ( this._events[name] ) {
+      i = this._events[name].indexOf( method );
+      while ( i > -1 ) {
+        this._events[name].splice( i, 1 );
+        i = this._events[name].indexOf( method );
+      }
+    }
+  }
+};
+
+module.exports = Emitter;
+
+},{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js":[function(require,module,exports){
 module.exports = function () {
   return {
     solution : [
