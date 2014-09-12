@@ -1,27 +1,32 @@
 $cell_width: 3rem
-$sub_board_border: 2px solid black
+$sub_board_border: 2px solid #333
+$sub_board_border_xtra: 3px solid #333
+$cell_border: 1px solid #333
+
+$board_width: 9 * $cell_width
 
 .board
-  width: 27rem
-  height: 27rem
+  box-sizing: content-box
+  width: $board_width
+  border: $sub_board_border
   .row
     list-style-type: none
     margin: 0
     padding: 0
-    height: 3rem
-  .row:first-of-type
-    border-top: $sub_board_border
   .row:nth-of-type(3n)
     border-bottom: $sub_board_border
+  .row:last-of-type
+    border-bottom: none
 
   .cell
     display: inline-block
     width: $cell_width
     text-align: center
-  .cell:first-of-type
-    border-left: $sub_board_border
+    border: $cell_border
   .cell:nth-of-type(3n)
-    border-right: $sub_board_border
+    border-right: $sub_board_border_xtra
+  .cell:last-of-type
+    border-right-width: 1px
 
   .cell--input
     max-width: $cell_width

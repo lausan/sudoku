@@ -1,11 +1,14 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.sudoku=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/app.js":[function(require,module,exports){
+var fixtures = require( "./fixture" )();
+console.log(Object.keys(fixtures));
 module.exports = {
   Board: require( "./board" ),
   BoardView: require( "./board-view" ),
-  solution: require( "./solution" )
+  solution: fixtures.solution,
+  problem: fixtures.problem
 };
 
-},{"./board":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js","./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./solution":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/solution.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
+},{"./board":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js","./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./fixture":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
 var $ = require( "jquery" );
 
 function BoardView ( board ) {
@@ -158,32 +161,33 @@ Board.isFullyValid = function ( arr ) {
 
 module.exports = Board;
 
-},{"lodash":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/lodash/dist/lodash.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/solution.js":[function(require,module,exports){
+},{"lodash":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/lodash/dist/lodash.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js":[function(require,module,exports){
 module.exports = function () {
-  return [
-    [5,3,4,6,7,8,9,1,2],
-    [6,7,2,1,9,5,3,4,8],
-    [1,9,8,3,4,2,5,6,7],
-    [8,5,9,7,6,1,4,2,3],
-    [4,2,6,8,5,3,7,9,1],
-    [7,1,3,9,2,4,8,5,6],
-    [9,6,1,5,3,7,2,8,4],
-    [2,8,7,4,1,9,6,3,5],
-    [3,4,5,2,8,6,1,7,9]
-  ];
+  return {
+    solution : [
+      [5,3,4,6,7,8,9,1,2],
+      [6,7,2,1,9,5,3,4,8],
+      [1,9,8,3,4,2,5,6,7],
+      [8,5,9,7,6,1,4,2,3],
+      [4,2,6,8,5,3,7,9,1],
+      [7,1,3,9,2,4,8,5,6],
+      [9,6,1,5,3,7,2,8,4],
+      [2,8,7,4,1,9,6,3,5],
+      [3,4,5,2,8,6,1,7,9]
+    ],
+    problem: [
+      [5,3,null,null,7,null,null,null,null],
+      [6,null,null,1,9,5,null,null,null],
+      [null,9,8,null,null,null,null,6,null],
+      [8,null,null,null,6,null,null,null,3],
+      [4,null,null,8,null,3,null,null,1],
+      [7,null,null,null,2,null,null,null,6],
+      [null,6,null,null,null,null,2,8,null],
+      [null,null,null,4,1,9,null,null,5],
+      [null,null,null,null,8,null,null,7,9]
+    ]
+  };
 };
-
-  var some = [
-    [5,3, , ,7, , , , ],
-    [6, , ,1,9,5, , , ],
-    [ ,9,8, , , , ,6, ],
-    [8, , , ,6, , , ,3],
-    [4, , ,8, ,3, , ,1],
-    [7, , , ,2, , , ,6],
-    [ ,6, , , , ,2,8, ],
-    [ , , ,4,1,9, , ,5],
-    [ , , , ,8, , ,7,9]
-  ];
 
 },{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js":[function(require,module,exports){
 /*!

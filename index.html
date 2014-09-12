@@ -11,7 +11,7 @@
 
   <script src="app.js"></script>
   <script>
-    var b = new sudoku.Board(sudoku.solution());
+    var b = new sudoku.Board(sudoku.problem);
     var v = new sudoku.BoardView(b);
     v.render();
     document.body.appendChild(v.element[0]);
