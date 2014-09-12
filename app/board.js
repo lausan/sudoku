@@ -44,60 +44,49 @@ Board.prototype.rowValues = function ( i ) {
   return this._board[i].slice();
 };
 
-Board.prototype.subBoardValues = function ( x, y ) {
-  if ( x > BOARD_SIZE / SUB_BOARD_SIZE - 1 || y > BOARD_SIZE / SUB_BOARD_SIZE - 1 ) {
+// Returns an array of values for a given
+Board.prototype.subBoardValues = function ( i ) {
+  if ( i > BOARD_SIZE - 1 ) {
     throw new Error( "Attempting to read sub-board out of range" );
   }
   var values = [];
+  var x = i % SUB_BOARD_SIZE;
+  var y = Math.floor( i / SUB_BOARD_SIZE );
   var startX = x * SUB_BOARD_SIZE;
   var endX = startX + SUB_BOARD_SIZE;
   var startY = y * SUB_BOARD_SIZE;
   var endY = startY + SUB_BOARD_SIZE;
-  for ( var i = startX; i < endX; i++ ) {
-    for ( var j = startY; j < endY; j++ ) {
-      values.push( this.get( i, j ) );
+  for ( var j = startY; j < endY; j++ ) {
+    for ( var k = startX; k < endX; k++ ) {
+      values.push( this.get( j, k ) );
     }
   }
   return values;
 };
 
-Board.prototype._mapRowsOrColumns = function ( fn, which ) {
-  var method = which === "rows" ? "rowValues" : "columnValues";
+// Internal method for mapping rows, columns, or sub-boards
+Board.prototype._mapGroup = function ( fn, which ) {
+  var method = which + "Values";
   var results = [];
   for ( var i = 0; i < BOARD_SIZE; i++ ) {
     results.push( fn( this[method]( i ) ) );
   }
   return results;
-}
+};
 
 // Calls `fn` with each row and returns the result.
 Board.prototype.mapRows = function ( fn ) {
-  var results = [];
-  for ( var i = 0; i < BOARD_SIZE; i++ ) {
-    results.push( fn( this.rowValues( i ) ) );
-  }
-  return results;
+  return this._mapGroup( fn, "row" );
 };
 
 // Calls `fn` with each column and returns the result.
 Board.prototype.mapColumns = function ( fn ) {
-  var results = [];
-  for ( var i = 0; i < BOARD_SIZE; i++ ) {
-    results.push( fn( this.columnValues( i ) ) );
-  }
-  return results;
+  return this._mapGroup( fn, "column" );
 };
 
 // Calls `fn` with each sub-board and returns the result.
 Board.prototype.mapSubBoards = function ( fn ) {
-  var results = [];
-  var max = BOARD_SIZE / SUB_BOARD_SIZE;
-  for ( var i = 0; i < max; i++ ) {
-    for ( var j = 0; j < max; j++ ) {
-      results.push( fn( this.subBoardValues( i, j ) ) );
-    }
-  }
-  return results;
+  return this._mapGroup( fn, "subBoard" );
 };
 
 // Returns whether or not the board is in a valid solution state

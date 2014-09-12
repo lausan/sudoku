@@ -1,6 +1,6 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.sudoku=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/app.js":[function(require,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.sudoku=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var fixtures = require( "./fixture" )();
-console.log(Object.keys(fixtures));
+
 module.exports = {
   Board: require( "./board" ),
   BoardView: require( "./board-view" ),
@@ -9,8 +9,7 @@ module.exports = {
   problem: fixtures.problem
 };
 
-},{"./board":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js","./board-controller":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js","./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./fixture":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-controller.js":[function(require,module,exports){
-
+},{"./board":4,"./board-controller":2,"./board-view":3,"./fixture":6}],2:[function(require,module,exports){
 // APP MODULES
 var Emitter = require( "./emitter" );
 var BoardView = require( "./board-view" );
@@ -29,7 +28,6 @@ function BoardController ( board, view ) {
     this.syncCell( coord[0], coord[1], evt.target.value );
     this.syncValidity();
   }.bind( this ) );
-
 }
 
 BoardController.prototype = Object.create( Emitter.prototype );
@@ -51,7 +49,7 @@ BoardController.prototype.syncValidity = function () {
 
 module.exports = BoardController;
 
-},{"./board-view":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js","./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
+},{"./board-view":3,"./emitter":5}],3:[function(require,module,exports){
 // NPM MODULES
 var $ = require( "jquery" );
 
@@ -114,7 +112,7 @@ function BoardView () {
   this.element = $( "<div class='board'>" );
   this.style = $( "<style>" ).appendTo( document.head );
   this.element
-    .on( "change", "input", this.emit.bind( this, "change" ) )
+    .on( "input", "input", this.emit.bind( this, "change" ) )
     // This handler lets the user navigate cells with:
     // ⌘+←, ⌘+↑, ⌘+→, ⌘+↓
     .on( "keydown", "input", function ( evt ) {
@@ -189,7 +187,7 @@ BoardView.prototype.updateStyle = function ( validity ) {
 
 module.exports = BoardView;
 
-},{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js","jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js":[function(require,module,exports){
+},{"./emitter":5,"./util":7,"jquery":8}],4:[function(require,module,exports){
 var util = require( "./util" );
 
 var BOARD_SIZE = 9;
@@ -236,60 +234,49 @@ Board.prototype.rowValues = function ( i ) {
   return this._board[i].slice();
 };
 
-Board.prototype.subBoardValues = function ( x, y ) {
-  if ( x > BOARD_SIZE / SUB_BOARD_SIZE - 1 || y > BOARD_SIZE / SUB_BOARD_SIZE - 1 ) {
+// Returns an array of values for a given
+Board.prototype.subBoardValues = function ( i ) {
+  if ( i > BOARD_SIZE - 1 ) {
     throw new Error( "Attempting to read sub-board out of range" );
   }
   var values = [];
+  var x = i % SUB_BOARD_SIZE;
+  var y = Math.floor( i / SUB_BOARD_SIZE );
   var startX = x * SUB_BOARD_SIZE;
   var endX = startX + SUB_BOARD_SIZE;
   var startY = y * SUB_BOARD_SIZE;
   var endY = startY + SUB_BOARD_SIZE;
-  for ( var i = startX; i < endX; i++ ) {
-    for ( var j = startY; j < endY; j++ ) {
-      values.push( this.get( i, j ) );
+  for ( var j = startY; j < endY; j++ ) {
+    for ( var k = startX; k < endX; k++ ) {
+      values.push( this.get( j, k ) );
     }
   }
   return values;
 };
 
-Board.prototype._mapRowsOrColumns = function ( fn, which ) {
-  var method = which === "rows" ? "rowValues" : "columnValues";
+// Internal method for mapping rows, columns, or sub-boards
+Board.prototype._mapGroup = function ( fn, which ) {
+  var method = which + "Values";
   var results = [];
   for ( var i = 0; i < BOARD_SIZE; i++ ) {
     results.push( fn( this[method]( i ) ) );
   }
   return results;
-}
+};
 
 // Calls `fn` with each row and returns the result.
 Board.prototype.mapRows = function ( fn ) {
-  var results = [];
-  for ( var i = 0; i < BOARD_SIZE; i++ ) {
-    results.push( fn( this.rowValues( i ) ) );
-  }
-  return results;
+  return this._mapGroup( fn, "row" );
 };
 
 // Calls `fn` with each column and returns the result.
 Board.prototype.mapColumns = function ( fn ) {
-  var results = [];
-  for ( var i = 0; i < BOARD_SIZE; i++ ) {
-    results.push( fn( this.columnValues( i ) ) );
-  }
-  return results;
+  return this._mapGroup( fn, "column" );
 };
 
 // Calls `fn` with each sub-board and returns the result.
 Board.prototype.mapSubBoards = function ( fn ) {
-  var results = [];
-  var max = BOARD_SIZE / SUB_BOARD_SIZE;
-  for ( var i = 0; i < max; i++ ) {
-    for ( var j = 0; j < max; j++ ) {
-      results.push( fn( this.subBoardValues( i, j ) ) );
-    }
-  }
-  return results;
+  return this._mapGroup( fn, "subBoard" );
 };
 
 // Returns whether or not the board is in a valid solution state
@@ -343,7 +330,7 @@ Board.isFullyValid = function ( arr ) {
 
 module.exports = Board;
 
-},{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js":[function(require,module,exports){
+},{"./util":7}],5:[function(require,module,exports){
 var slice = require( "./util" ).slice;
 
 // Each method guards against this._events being undefined
@@ -406,7 +393,7 @@ Emitter.prototype.off = function ( name, method ) {
 
 module.exports = Emitter;
 
-},{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/fixture.js":[function(require,module,exports){
+},{"./util":7}],6:[function(require,module,exports){
 module.exports = function () {
   return {
     solution : [
@@ -434,7 +421,7 @@ module.exports = function () {
   };
 };
 
-},{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js":[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function unique ( arr ) {
   return arr.reduce( function ( result, item ) {
     if ( result.indexOf( item ) === -1 ) {
@@ -488,7 +475,7 @@ module.exports = {
   addArrays: addArrays
 };
 
-},{}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js":[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/
@@ -9680,5 +9667,5 @@ return jQuery;
 
 }));
 
-},{}]},{},["/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/app.js"])("/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/app.js")
+},{}]},{},[1])(1)
 });

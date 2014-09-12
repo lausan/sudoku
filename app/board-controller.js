@@ -1,4 +1,3 @@
-
 // APP MODULES
 var Emitter = require( "./emitter" );
 var BoardView = require( "./board-view" );
@@ -17,7 +16,6 @@ function BoardController ( board, view ) {
     this.syncCell( coord[0], coord[1], evt.target.value );
     this.syncValidity();
   }.bind( this ) );
-
 }
 
 BoardController.prototype = Object.create( Emitter.prototype );

@@ -60,7 +60,7 @@ function BoardView () {
   this.element = $( "<div class='board'>" );
   this.style = $( "<style>" ).appendTo( document.head );
   this.element
-    .on( "change", "input", this.emit.bind( this, "change" ) )
+    .on( "input", "input", this.emit.bind( this, "change" ) )
     // This handler lets the user navigate cells with:
     // ⌘+←, ⌘+↑, ⌘+→, ⌘+↓
     .on( "keydown", "input", function ( evt ) {
