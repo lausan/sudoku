@@ -144,7 +144,7 @@ Board.prototype.flatten = function () {
   return util.flatten( this._board );
 };
 
-// Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9, or falsy
+// Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9, or null
 Board.isPartiallyValid = function ( arr ) {
   var allValid = arr.every( validValue );
   var withoutNull = arr.filter( util.identity );

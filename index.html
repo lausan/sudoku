@@ -22,7 +22,7 @@
   <div class="won">
     <h2>Nice work!</h2>
     <p>You completed the puzzle!</p>
-    <button class="new-game btn" id="js-new-game">New Game</button>
+    <button class="new-game btn js-new-game">New Game</button>
   </div>
 
   <div class="main">
@@ -30,11 +30,7 @@
 
   <script src="app.js"></script>
   <script>
-    var b = new sudoku.Board(sudoku.solution);
-    var v = new sudoku.BoardView(b);
-    var c = new sudoku.BoardController(b, v);
-
-    document.querySelector( ".main" ).appendChild( v.element[0] );
+    sudoku.newGame();
   </script>
 </body>
 </html>
