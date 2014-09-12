@@ -26,6 +26,31 @@ beforeEach( function () {
   view.render( board.asArray() );
 });
 
+describe( "event listening behavior", function () {
+  it( "should emit a 'change' event when a descendant input has an 'input' event", function () {
+    var bool = false;
+    view.on( "change", function () {
+      bool = true;
+    });
+    view.element.find( "input" ).eq( 20 ).trigger( "input" );
+    bool.should.equal( true );
+  });
+
+  // phantomJS doesn't seem to support .focus() very well
+  // however, an equivalent test works fine in the browser
+  //
+  // it( "should allow navigation between cells via ⌘+← and similar key combos", function () {
+  //   var focused;
+  //   var e = $.Event( "keydown" );
+  //   e.which = 39;
+  //   e.metaKey = true;
+  //   view.cellAt( 0, 0 ).find( "input" ).trigger( e );
+  //   focused = document.activeElement;
+  //   view.cellAt( 1, 0 ).find( "input" )[0].should.equal( focused );
+  // });
+
+});
+
 describe( "instance methods", function () {
   describe( ".render()", function () {
     it( "renders the provided 2d array as a sudoku board", function () {
