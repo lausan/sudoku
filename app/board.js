@@ -36,6 +36,9 @@ Board.prototype.set = function ( x, y, value ) {
   if ( y >= this._board.length || x >= this._board[0].length ) {
     throw new Error( "Attempting to set cell out of range" );
   }
+  if ( !validValue( value ) ) {
+    throw new Error( "Attempting to set invalid value in board" );
+  }
   this._board[y][x] = value;
   return this;
 };
@@ -68,25 +71,38 @@ Board.prototype.subBoardValues = function ( x, y ) {
   return values;
 };
 
-Board.prototype.eachRow = function ( fn ) {
+Board.prototype.mapRows = function ( fn ) {
+  var results = [];
   for ( var i = 0; i < BOARD_SIZE; i++ ) {
-    fn( this.rowValues( i ) );
+    results.push( fn( this.rowValues( i ) ) );
   }
+  return results;
 };
 
-Board.prototype.eachColumn = function ( fn ) {
+Board.prototype.mapColumns = function ( fn ) {
+  var results = [];
   for ( var i = 0; i < BOARD_SIZE; i++ ) {
-    fn( this.columnValues( i ) );
+    results.push( fn( this.columnValues( i ) ) );
   }
+  return results;
 };
 
-Board.prototype.eachSubBoard = function ( fn ) {
+Board.prototype.mapSubBoards = function ( fn ) {
+  var results = [];
   var max = BOARD_SIZE / SUB_BOARD_SIZE;
   for ( var i = 0; i < max; i++ ) {
     for ( var j = 0; j < max; j++ ) {
-      fn( this.subBoardValues( i, j ) );
+      results.push( fn( this.subBoardValues( i, j ) ) );
     }
   }
+  return results;
+};
+
+Board.prototype.isComplete = function ( fn ) {
+  return this.mapRows( Board.isFullyValid )
+    .concat( this.mapColumns( Board.isFullyValid ) )
+    .concat( this.mapSubBoards( Board.isFullyValid ) )
+    .every( _.identity );
 };
 
 // Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9

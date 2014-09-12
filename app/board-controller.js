@@ -1,0 +1,3 @@
+function BoardController ( board, view ) {
+
+}

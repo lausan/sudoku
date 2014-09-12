@@ -1,0 +1,35 @@
+$cell_width: 3rem
+$sub_board_border: 2px solid black
+
+.board
+  width: 27rem
+  height: 27rem
+  .row
+    list-style-type: none
+    margin: 0
+    padding: 0
+    height: 3rem
+  .row:first-of-type
+    border-top: $sub_board_border
+  .row:nth-of-type(3n)
+    border-bottom: $sub_board_border
+
+  .cell
+    display: inline-block
+    width: $cell_width
+    text-align: center
+  .cell:first-of-type
+    border-left: $sub_board_border
+  .cell:nth-of-type(3n)
+    border-right: $sub_board_border
+
+  .cell--input
+    max-width: $cell_width
+    border: none
+    padding: 0
+    margin: 0
+    text-align: center
+    width: 3rem
+    height: 3rem
+    background: transparent
+    font-size: 2rem

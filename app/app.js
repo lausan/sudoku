@@ -1,4 +1,5 @@
 module.exports = {
-  board: require( "./board" ),
+  Board: require( "./board" ),
+  BoardView: require( "./board-view" ),
   solution: require( "./solution" )
 };
