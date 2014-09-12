@@ -1,8 +1,20 @@
 var $ = require( "jquery" );
+
+var util = require( "./util" );
+
 var Emitter = require( "./emitter" );
 
 var BOARD_SIZE = 9;
 var ENTER = 13;
+
+var INVALID_STYLE = "{ background: rgba(1, 0, 0, .2); }";
+
+var counter = (function() {
+  var num = 0;
+  return function () {
+    return ++num;
+  };
+})();
 
 function flatIndexFromXY ( x, y ) {
   return y * BOARD_SIZE + x - 1;
@@ -11,8 +23,12 @@ function flatIndexFromXY ( x, y ) {
 function BoardView ( board ) {
   this.board = board;
   this.element = $( "<div class='board'>" );
-  this._inputs = $();
-  this.element.on( "change", "input", this.emit.bind( this, "change" ) );
+  this.element
+    .on( "change", "input", this.emit.bind( this, "change" ) )
+    .on( "change", "input", function ( evt ) {
+      // var onOff = util.validValue( Number( this.value ) );
+      // $( this ).parent().toggleClass( "cell--invalid", !onOff );
+    });
 }
 
 BoardView.prototype = Object.create( Emitter.prototype );

@@ -24,6 +24,8 @@
     border-right: 3px solid #333333; }
   .board .cell:last-of-type {
     border-right-width: 1px; }
+  .board .cell-invalid {
+    background: red; }
   .board .cell--input {
     max-width: 3rem;
     border: none;

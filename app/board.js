@@ -1,4 +1,4 @@
-var _ = require( "lodash" );
+var util = require( "./util" );
 
 var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
@@ -102,22 +102,23 @@ Board.prototype.isComplete = function ( fn ) {
   return this.mapRows( Board.isFullyValid )
     .concat( this.mapColumns( Board.isFullyValid ) )
     .concat( this.mapSubBoards( Board.isFullyValid ) )
-    .every( _.identity );
+    .every( util.identity );
 };
 
 Board.prototype.flatten = function () {
-  return _.flatten( this._board );
+  return util.flatten( this._board );
 };
 
-// Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9
+// Checks if an array contains only 1, 2, 3, 4, 5, 6, 7, 8, 9, or falsy
 Board.isPartiallyValid = function ( arr ) {
-  return _.unique( arr ).length === arr.length &&
+  arr = arr.filter( util.identity );
+  return util.unique( arr ).length === arr.length &&
     arr.every( validValue );
 };
 
 // Checks if an array contains exactly 1, 2, 3, 4, 5, 6, 7, 8, 9
 Board.isFullyValid = function ( arr ) {
-  return _.unique( arr ).length === arr.length &&
+  return util.unique( arr ).length === arr.length &&
     arr.length === BOARD_SIZE &&
     arr.every( validValue );
 };
