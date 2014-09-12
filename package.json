@@ -22,6 +22,7 @@
   "devDependencies": {
     "chai": "^1.9.1",
     "function-bind": "^1.0.0",
+    "jshint": "^2.5.5",
     "jslint": "^0.6.4",
     "mocha": "^1.21.4",
     "testling": "^1.7.0",
