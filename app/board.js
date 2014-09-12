@@ -1,7 +1,9 @@
 var util = require( "./util" );
+var Emitter = require( "./emitter" );
 
 var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
+
 
 function validValue ( value ) {
   return value === null || (
@@ -12,9 +14,26 @@ function validValue ( value ) {
   );
 }
 
+// null for empty string
+// number for numeric string
+// value for any other value
+function standardizeValue ( value ) {
+  var num = Number( value );
+  if ( value === "" ) {
+    return null;
+  }
+  if ( typeof value === "string" && !isNaN( num ) ) {
+    return num;
+  }
+  return value;
+}
+
 function Board ( board ) {
   this._board = board.map( util.sliceOne );
 }
+
+Board.prototype = Object.create( Emitter.prototype );
+Board.prototype.constructor = Board;
 
 Board.prototype.get = function ( x, y ) {
   if ( this._board[y] ) {
@@ -27,10 +46,8 @@ Board.prototype.set = function ( x, y, value ) {
   if ( y >= this._board.length || x >= this._board[0].length ) {
     throw new Error( "Attempting to set cell out of range" );
   }
-  if ( !validValue( value ) ) {
-    throw new Error( "Attempting to set invalid value in board" );
-  }
-  this._board[y][x] = value === null ? value : Number( value );
+  this._board[y][x] = standardizeValue( value );
+  // this.emit( "set", x, y, this.get( x, y ) );
   return this;
 };
 

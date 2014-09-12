@@ -59,8 +59,21 @@ function makeInput ( x, y, value ) {
 function BoardView () {
   this.element = $( "<div class='board'>" );
   this.style = $( "<style>" ).appendTo( document.head );
+  this._focusedPrev = null;
   this.element
-    .on( "input", "input", this.emit.bind( this, "change" ) )
+    // this handler stores the value of the focused input
+    // as soon as it gains focus
+    .on( "focus", "input", function ( evt ) {
+      this._focusedPrev = evt.target.value;
+    }.bind( this ) )
+
+    .on( "input", "input", function ( evt ) {
+      if ( evt.target.value !== this._focusedPrev ) {
+        this.emit( "change", evt );
+        this._focusedPrev = evt.target.value;
+      }
+    }.bind( this ) )
+
     // This handler lets the user navigate cells with:
     // ⌘+←, ⌘+↑, ⌘+→, ⌘+↓
     .on( "keydown", "input", function ( evt ) {
@@ -73,7 +86,7 @@ function BoardView () {
           this.cellAt( next[0], next[1] ).find( "input" ).focus().select();
         }
       }
-    }.bind( this ) );
+    }.bind( this ) )
 }
 
 BoardView.prototype = Object.create( Emitter.prototype );

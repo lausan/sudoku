@@ -21,9 +21,8 @@ function BoardController ( board, view ) {
 BoardController.prototype = Object.create( Emitter.prototype );
 BoardController.prototype.constructor = BoardController;
 
-//
 BoardController.prototype.syncCell = function ( x, y, value ) {
-  this.board.set( x, y, value || null );
+  this.board.set( x, y, value );
   this.view.updateCell( x, y, this.board.get( x, y ) );
 };
 

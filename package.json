@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "watchify ./app/app.js -s sudoku -o ./app.js",
     "build": "browserify ./app/app.js -s sudoku -o ./app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "testling"
   },
   "author": "",
   "license": "MIT",

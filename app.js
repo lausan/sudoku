@@ -33,9 +33,8 @@ function BoardController ( board, view ) {
 BoardController.prototype = Object.create( Emitter.prototype );
 BoardController.prototype.constructor = BoardController;
 
-//
 BoardController.prototype.syncCell = function ( x, y, value ) {
-  this.board.set( x, y, value || null );
+  this.board.set( x, y, value );
   this.view.updateCell( x, y, this.board.get( x, y ) );
 };
 
@@ -111,8 +110,21 @@ function makeInput ( x, y, value ) {
 function BoardView () {
   this.element = $( "<div class='board'>" );
   this.style = $( "<style>" ).appendTo( document.head );
+  this._focusedPrev = null;
   this.element
-    .on( "input", "input", this.emit.bind( this, "change" ) )
+    // this handler stores the value of the focused input
+    // as soon as it gains focus
+    .on( "focus", "input", function ( evt ) {
+      this._focusedPrev = evt.target.value;
+    }.bind( this ) )
+
+    .on( "input", "input", function ( evt ) {
+      if ( evt.target.value !== this._focusedPrev ) {
+        this.emit( "change", evt );
+        this._focusedPrev = evt.target.value;
+      }
+    }.bind( this ) )
+
     // This handler lets the user navigate cells with:
     // ⌘+←, ⌘+↑, ⌘+→, ⌘+↓
     .on( "keydown", "input", function ( evt ) {
@@ -125,7 +137,7 @@ function BoardView () {
           this.cellAt( next[0], next[1] ).find( "input" ).focus().select();
         }
       }
-    }.bind( this ) );
+    }.bind( this ) )
 }
 
 BoardView.prototype = Object.create( Emitter.prototype );
@@ -188,9 +200,11 @@ module.exports = BoardView;
 
 },{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js","jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js":[function(require,module,exports){
 var util = require( "./util" );
+var Emitter = require( "./emitter" );
 
 var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
+
 
 function validValue ( value ) {
   return value === null || (
@@ -201,9 +215,26 @@ function validValue ( value ) {
   );
 }
 
+// null for empty string
+// number for numeric string
+// value for any other value
+function standardizeValue ( value ) {
+  var num = Number( value );
+  if ( value === "" ) {
+    return null;
+  }
+  if ( typeof value === "string" && !isNaN( num ) ) {
+    return num;
+  }
+  return value;
+}
+
 function Board ( board ) {
   this._board = board.map( util.sliceOne );
 }
+
+Board.prototype = Object.create( Emitter.prototype );
+Board.prototype.constructor = Board;
 
 Board.prototype.get = function ( x, y ) {
   if ( this._board[y] ) {
@@ -216,10 +247,8 @@ Board.prototype.set = function ( x, y, value ) {
   if ( y >= this._board.length || x >= this._board[0].length ) {
     throw new Error( "Attempting to set cell out of range" );
   }
-  if ( !validValue( value ) ) {
-    throw new Error( "Attempting to set invalid value in board" );
-  }
-  this._board[y][x] = value === null ? value : Number( value );
+  this._board[y][x] = standardizeValue( value );
+  // this.emit( "set", x, y, this.get( x, y ) );
   return this;
 };
 
@@ -327,7 +356,7 @@ Board.isFullyValid = function ( arr ) {
 
 module.exports = Board;
 
-},{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js":[function(require,module,exports){
+},{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js":[function(require,module,exports){
 var slice = require( "./util" ).slice;
 
 // Each method guards against this._events being undefined
