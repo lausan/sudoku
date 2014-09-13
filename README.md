@@ -20,12 +20,11 @@ This app exposes a single global object, `sudoku`. `sudoku` is responsible for c
 ### `BoardController`
 `BoardController` is responsible for mediating the data flow between a view and a board. The implementation is fairly basic; simply, it updates a board model when changes occur in the UI view, and likewise updates the view when the model data changes. This allows the model and view to have no direct knowledge of the other.
 
-
 ## Technologies Used
 
-### Browserify
+### Build: Browserify
 Browserify allows you to write modular client-side code with Node-style `require()`. This app uses `app/app.js` as the entry point; Browserify recursively resolves dependencies and bundles the code into a single file.
 
-## Testing & Testling
-Testling is a dead simple abstraction layer on top of [PhantomJS](http://phantomjs.org/). With minimal configuration in `package.json`, it runs the test suite in a headless browser. Each method of each class is thoroughly tested; the continuous integration status can be viewed on [Travis CI](https://travis-ci.org/nickb1080/sudoku).
+## Test: Testling
+Testling is an abstraction layer on top of [PhantomJS](http://phantomjs.org/), designed to work with Browserify. With minimal configuration in `package.json`, it runs the test suite in a headless browser. Each method of each class is thoroughly tested; the continuous integration status can be viewed on [Travis CI](https://travis-ci.org/nickb1080/sudoku).
 

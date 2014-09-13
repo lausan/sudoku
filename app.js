@@ -283,6 +283,7 @@ var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
 
 // MODULE HELPERS
+//
 function goodValue ( value ) {
   return (
     !isNaN( Number( value ) ) &&
@@ -334,9 +335,6 @@ Board.prototype.get = function ( x, y ) {
 };
 
 Board.prototype.set = function ( x, y, value ) {
-  if ( y >= this._board.length || x >= this._board[0].length ) {
-    throw new Error( "Attempting to set cell out of range" );
-  }
   var val = standardizeValue( value );
   var prev = this.get( x, y );
   if ( prev !== val ) {
@@ -361,9 +359,6 @@ Board.prototype.rowValues = function ( i ) {
 
 // Returns an array of values for a given
 Board.prototype.subBoardValues = function ( i ) {
-  if ( i > BOARD_SIZE - 1 ) {
-    throw new Error( "Attempting to read sub-board out of range" );
-  }
   var values = [];
   var y = i % SUB_BOARD_SIZE;
   var x = Math.floor( i / SUB_BOARD_SIZE );
@@ -521,6 +516,8 @@ module.exports = Emitter;
 },{"./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js":[function(require,module,exports){
 "use strict";
 
+// This file contains utility functions used throughout the app.
+
 function unique ( arr ) {
   return arr.reduce( function ( result, item ) {
     if ( result.indexOf( item ) === -1 ) {
@@ -541,15 +538,6 @@ function flatten ( arr ) {
 
 function identity ( obj ) {
   return obj;
-}
-
-function validValue ( value ) {
-  return (
-    Number( value ) === value &&
-    value % 1 === 0 &&
-    value > 0 &&
-    value < 10
-  ) || value === null;
 }
 
 function demethodize ( method ) {
@@ -577,7 +565,6 @@ module.exports = {
   flatten: flatten,
   identity: identity,
   opposite: opposite,
-  validValue: validValue,
   sliceOne: demethodizeOne( [].slice ),
   slice: demethodize( [].slice ),
   addArrays: addArrays

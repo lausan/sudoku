@@ -75,7 +75,7 @@ input {
     border-bottom: none; }
   .board .cell {
     display: inline-block;
-    width: 11.11%;
+    width: 11.11111%;
     text-align: center;
     border: 1px solid #333333;
     transition: background-color 0.2s ease-in-out; }

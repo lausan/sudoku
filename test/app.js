@@ -22,7 +22,6 @@ describe( "newGame()", function () {
     var board2 = app._game.board.flatten();
     board1.should.not.deep.equal( board2 );
   });
-
 });
 
 describe( "newSolvedGame()", function () {

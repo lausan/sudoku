@@ -1,5 +1,7 @@
 "use strict";
 
+// This file contains utility functions used throughout the app.
+
 function unique ( arr ) {
   return arr.reduce( function ( result, item ) {
     if ( result.indexOf( item ) === -1 ) {
@@ -20,15 +22,6 @@ function flatten ( arr ) {
 
 function identity ( obj ) {
   return obj;
-}
-
-function validValue ( value ) {
-  return (
-    Number( value ) === value &&
-    value % 1 === 0 &&
-    value > 0 &&
-    value < 10
-  ) || value === null;
 }
 
 function demethodize ( method ) {
@@ -56,7 +49,6 @@ module.exports = {
   flatten: flatten,
   identity: identity,
   opposite: opposite,
-  validValue: validValue,
   sliceOne: demethodizeOne( [].slice ),
   slice: demethodize( [].slice ),
   addArrays: addArrays
