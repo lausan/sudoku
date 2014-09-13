@@ -83,6 +83,8 @@ input {
     border-right: 3px solid #333333; }
   .board .cell:last-of-type {
     border-right-width: 1px; }
+  .board .cell--invalid {
+    background: #e74c3c; }
   .board .cell--input {
     font: inherit;
     border: none;

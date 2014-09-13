@@ -2,6 +2,7 @@
 
 // APP MODULES
 var Emitter = require( "./emitter" );
+var util = require( "./util" );
 
 // PRIMARY MODULE CLASS
 
@@ -12,14 +13,12 @@ function BoardController ( board, view ) {
   this.board = board;
   this.view = view;
   this.view.render( this.board.asArray() );
-  this.view.on( "ui-change", function ( x, y, value ) {
-    this.updateModel( x, y, value );
-  }.bind( this ) );
 
-  this.board.on( "data-change", function ( x, y, value ) {
-    this.updateView( x, y, value );
-    this.syncValidity();
-  }.bind( this ) );
+  util.bindAll( this, "updateModel", "updateView", "updateInvalid" );
+
+  this.view.on( "ui-change", this.updateModel );
+  this.board.on( "data-change", this.updateView );
+  this.board.on( "data-invalid", this.updateInvalid );
 
   this.view.render( this.board.asArray() );
 }
@@ -33,14 +32,19 @@ BoardController.prototype.updateModel = function ( x, y, value ) {
 
 BoardController.prototype.updateView = function ( x, y, value ) {
   this.view.updateCell( x, y, value );
-};
-
-BoardController.prototype.syncValidity = function () {
   this.view.updateStyle({
     "row": this.board.rowValidity(),
     "column": this.board.columnValidity(),
     "sub-board": this.board.subBoardValidity()
   });
+};
+
+BoardController.prototype.updateInvalid = function ( x, y, bool ) {
+  this.view.toggleInvalid( x, y, bool );
+};
+
+BoardController.prototype.syncValidity = function () {
+
 };
 
 module.exports = BoardController;

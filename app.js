@@ -85,6 +85,7 @@ module.exports = sudoku;
 
 // APP MODULES
 var Emitter = require( "./emitter" );
+var util = require( "./util" );
 
 // PRIMARY MODULE CLASS
 
@@ -95,14 +96,12 @@ function BoardController ( board, view ) {
   this.board = board;
   this.view = view;
   this.view.render( this.board.asArray() );
-  this.view.on( "ui-change", function ( x, y, value ) {
-    this.updateModel( x, y, value );
-  }.bind( this ) );
 
-  this.board.on( "data-change", function ( x, y, value ) {
-    this.updateView( x, y, value );
-    this.syncValidity();
-  }.bind( this ) );
+  util.bindAll( this, "updateModel", "updateView", "updateInvalid" );
+
+  this.view.on( "ui-change", this.updateModel );
+  this.board.on( "data-change", this.updateView );
+  this.board.on( "data-invalid", this.updateInvalid );
 
   this.view.render( this.board.asArray() );
 }
@@ -116,9 +115,6 @@ BoardController.prototype.updateModel = function ( x, y, value ) {
 
 BoardController.prototype.updateView = function ( x, y, value ) {
   this.view.updateCell( x, y, value );
-};
-
-BoardController.prototype.syncValidity = function () {
   this.view.updateStyle({
     "row": this.board.rowValidity(),
     "column": this.board.columnValidity(),
@@ -126,9 +122,17 @@ BoardController.prototype.syncValidity = function () {
   });
 };
 
+BoardController.prototype.updateInvalid = function ( x, y, bool ) {
+  this.view.toggleInvalid( x, y, bool );
+};
+
+BoardController.prototype.syncValidity = function () {
+
+};
+
 module.exports = BoardController;
 
-},{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
+},{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board-view.js":[function(require,module,exports){
 "use strict";
 
 // NPM MODULES
@@ -147,7 +151,8 @@ var DIR = {
   39: [1, 0],  // keycode right
   40: [0, 1]   // keycode down
 };
-var INVALID_STYLE = "{ background-color: rgba(255, 0, 0, .2); }";
+
+var INVALID_STYLE = "{ background-color: rgba(231, 76, 60, .5 ); }";
 
 // MODULE HELPERS
 
@@ -269,6 +274,10 @@ BoardView.prototype.updateStyle = function ( validity ) {
   this.style.html( style );
 };
 
+BoardView.prototype.toggleInvalid = function ( x, y, bool ) {
+  this.cellAt( x, y ).toggleClass( "cell--invalid", bool );
+};
+
 module.exports = BoardView;
 
 },{"./emitter":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/emitter.js","./util":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/util.js","jquery":"/Users/nickbottomley/Documents/dev/github/nick/sudoku/node_modules/jquery/dist/jquery.js"}],"/Users/nickbottomley/Documents/dev/github/nick/sudoku/app/board.js":[function(require,module,exports){
@@ -337,8 +346,14 @@ Board.prototype.get = function ( x, y ) {
 Board.prototype.set = function ( x, y, value ) {
   var val = standardizeValue( value );
   var prev = this.get( x, y );
+  if ( !validValue( val ) ) {
+    this.emit( "data-invalid", x, y, true );
+  }
+  if ( !validValue( prev ) && validValue( val ) ) {
+    this.emit( "data-invalid", x, y, false );
+  }
   if ( prev !== val ) {
-    this._board[y][x] = standardizeValue( value );
+    this._board[y][x] = val;
     this.emit( "data-change", x, y, this.get( x, y ) );
   }
   if ( this.isComplete() ) {
@@ -560,6 +575,15 @@ function addArrays ( arr1, arr2 ) {
   });
 }
 
+function bindAll ( obj ) {
+  var args = [].slice.call( arguments, 1 );
+  args.forEach( function ( method ) {
+    var fn = obj[method];
+    obj[method] = fn.bind( obj );
+  });
+  return obj;
+}
+
 module.exports = {
   unique: unique,
   flatten: flatten,
@@ -567,6 +591,7 @@ module.exports = {
   opposite: opposite,
   sliceOne: demethodizeOne( [].slice ),
   slice: demethodize( [].slice ),
+  bindAll: bindAll,
   addArrays: addArrays
 };
 

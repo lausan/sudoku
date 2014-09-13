@@ -43,12 +43,18 @@ describe( "instance methods", function () {
       ctrl.updateView( 0, 0, 1 );
       view.element.find( "input" ).eq( 0 ).val().should.equal( "1" );
     });
+    it( "Should also update the style of the view", function () {
+      ctrl.updateView( 0, 0, 5 );
+      view.style.html().should.equal( "/* all valid */" );
+    });
   });
 
-  describe( "syncValidity", function () {
-    it( "Should send validation information to the view", function () {
-      ctrl.syncValidity();
-      view.style.html().should.equal( "/* all valid */" );
+  describe( ".updateInvalid()", function () {
+    it( "Should notify a view that a cell has become valid or invalid", function () {
+      ctrl.updateInvalid( 0, 0, true );
+      view.cellAt( 0, 0 ).is( ".cell--invalid" ).should.equal( true );
+      ctrl.updateInvalid( 0, 0, false );
+      view.cellAt( 0, 0 ).is( ".cell--invalid" ).should.equal( false );
     });
   });
 });

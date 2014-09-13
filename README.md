@@ -2,6 +2,8 @@
 
 This app is deployed on [GitHub Pages](https://pages.github.com/). Play a random board [here](http://nickb1080.github.io/sudoku/), or check out a [nearly finished one](http://nickb1080.github.io/sudoku/won.html) (just add "5" in the middle to win).
 
+**Hint**: Use ⌘+←, ⌘+↑, ⌘+→, and ⌘+↓ to navigate to adjacent cells.
+
 ## App Structure
 This app implements an event-driven MVC structure. This allows for sane management of game state, as well as loose coupling between components.
 

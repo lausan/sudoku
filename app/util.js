@@ -44,6 +44,15 @@ function addArrays ( arr1, arr2 ) {
   });
 }
 
+function bindAll ( obj ) {
+  var args = [].slice.call( arguments, 1 );
+  args.forEach( function ( method ) {
+    var fn = obj[method];
+    obj[method] = fn.bind( obj );
+  });
+  return obj;
+}
+
 module.exports = {
   unique: unique,
   flatten: flatten,
@@ -51,5 +60,6 @@ module.exports = {
   opposite: opposite,
   sliceOne: demethodizeOne( [].slice ),
   slice: demethodize( [].slice ),
+  bindAll: bindAll,
   addArrays: addArrays
 };

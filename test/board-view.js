@@ -84,7 +84,16 @@ describe( "instance methods", function () {
         "sub-board": board.subBoardValidity()
       };
       view.updateStyle( validity );
-      view.style.html().should.equal( ".row-3,.column-2,.sub-board-3{ background-color: rgba(255, 0, 0, .2); }" );
+      view.style.html().should.equal( ".row-3,.column-2,.sub-board-3{ background-color: rgba(231, 76, 60, .5 ); }" );
+    });
+  });
+
+  describe( ".toggleInvalid()", function () {
+    it( "toggles '.cell--invalid' on a given cell", function () {
+      view.toggleInvalid( 0, 0, true );
+      view.cellAt( 0, 0 ).is( ".cell--invalid" ).should.equal( true );
+      view.toggleInvalid( 0, 0, false );
+      view.cellAt( 0, 0 ).is( ".cell--invalid" ).should.equal( false );
     });
   });
 

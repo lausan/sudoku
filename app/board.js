@@ -63,8 +63,14 @@ Board.prototype.get = function ( x, y ) {
 Board.prototype.set = function ( x, y, value ) {
   var val = standardizeValue( value );
   var prev = this.get( x, y );
+  if ( !validValue( val ) ) {
+    this.emit( "data-invalid", x, y, true );
+  }
+  if ( !validValue( prev ) && validValue( val ) ) {
+    this.emit( "data-invalid", x, y, false );
+  }
   if ( prev !== val ) {
-    this._board[y][x] = standardizeValue( value );
+    this._board[y][x] = val;
     this.emit( "data-change", x, y, this.get( x, y ) );
   }
   if ( this.isComplete() ) {

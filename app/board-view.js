@@ -16,7 +16,8 @@ var DIR = {
   39: [1, 0],  // keycode right
   40: [0, 1]   // keycode down
 };
-var INVALID_STYLE = "{ background-color: rgba(255, 0, 0, .2); }";
+
+var INVALID_STYLE = "{ background-color: rgba(231, 76, 60, .5 ); }";
 
 // MODULE HELPERS
 
@@ -136,6 +137,10 @@ BoardView.prototype.updateStyle = function ( validity ) {
     style = selectors.join( "," ) + INVALID_STYLE;
   }
   this.style.html( style );
+};
+
+BoardView.prototype.toggleInvalid = function ( x, y, bool ) {
+  this.cellAt( x, y ).toggleClass( "cell--invalid", bool );
 };
 
 module.exports = BoardView;
