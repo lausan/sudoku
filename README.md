@@ -1,5 +1,7 @@
 # sudoku [![Build Status](https://travis-ci.org/nickb1080/sudoku.svg)](https://travis-ci.org/nickb1080/sudoku)
 
+This app is deployed on [GitHub Pages](https://pages.github.com/). Play a random board [here](http://nickb1080.github.io/sudoku/), or check out a [nearly finished one](http://nickb1080.github.io/sudoku/won.html) (just add "5" in the middle to win).
+
 ## App Structure
 This app implements an event-driven MVC structure. This allows for sane management of game state, as well as loose coupling between components.
 
@@ -22,8 +24,7 @@ This app exposes a single global object, `sudoku`. `sudoku` is responsible for c
 ## Technologies Used
 
 ### Browserify
-Browserify allows you to write modular client-side code with Node-style `require()`. This app uses `app/app.js` as the entry point; Browserify recursively resolves dependencies and bundles the code into a single file ()
-
+Browserify allows you to write modular client-side code with Node-style `require()`. This app uses `app/app.js` as the entry point; Browserify recursively resolves dependencies and bundles the code into a single file.
 
 ## Testing & Testling
 Testling is a dead simple abstraction layer on top of [PhantomJS](http://phantomjs.org/). With minimal configuration in `package.json`, it runs the test suite in a headless browser. Each method of each class is thoroughly tested; the continuous integration status can be viewed on [Travis CI](https://travis-ci.org/nickb1080/sudoku).
