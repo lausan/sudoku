@@ -23,7 +23,7 @@ This app exposes a single global object, `sudoku`. `sudoku` is responsible for c
 ## Technologies Used
 
 ### Build: Browserify
-Browserify allows you to write modular client-side code with Node-style `require()`. This app uses `app/app.js` as the entry point; Browserify recursively resolves dependencies and bundles the code into a single file.
+Browserify allows you to write modular client-side code with Node-style `require()`. This app uses `app/app.js` as the entry point; Browserify recursively resolves dependencies and bundles the code into a single file. The build script for this app uses the 'standalone' option to export a global variable, which is only necessary for inspecting and debugging in the browser.
 
 ## Test: Testling
 Testling is an abstraction layer on top of [PhantomJS](http://phantomjs.org/), designed to work with Browserify. With minimal configuration in `package.json`, it runs the test suite in a headless browser. Each method of each class is thoroughly tested; the continuous integration status can be viewed on [Travis CI](https://travis-ci.org/nickb1080/sudoku).
