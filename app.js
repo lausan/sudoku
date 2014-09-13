@@ -58,7 +58,6 @@ var sudoku = ( function () {
       };
       main.append( view.element );
       board.on( "complete", onWin );
-      board.emit( "set" );
     },
     newSolvedGame: function () {
       this.newGame([
@@ -284,13 +283,17 @@ var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
 
 // MODULE HELPERS
-function validValue ( value ) {
-  return value === null || (
+function goodValue ( value ) {
+  return (
     !isNaN( Number( value ) ) &&
     Number( value ) % 1 === 0 &&
     Number( value ) > 0 &&
     Number( value ) < 10
   );
+}
+
+function validValue ( value ) {
+  return value === null || goodValue( value );
 }
 
 // null for empty string
@@ -340,7 +343,7 @@ Board.prototype.set = function ( x, y, value ) {
     this._board[y][x] = standardizeValue( value );
     this.emit( "data-change", x, y, this.get( x, y ) );
   }
-  if ( this.isComplete ) {
+  if ( this.isComplete() ) {
     this.emit( "complete" );
   }
   return this;
@@ -445,7 +448,7 @@ Board.isPartiallyValid = function ( arr ) {
 Board.isFullyValid = function ( arr ) {
   return util.unique( arr ).length === arr.length &&
     arr.length === BOARD_SIZE &&
-    arr.every( validValue );
+    arr.every( goodValue );
 };
 
 module.exports = Board;

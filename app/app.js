@@ -57,7 +57,6 @@ var sudoku = ( function () {
       };
       main.append( view.element );
       board.on( "complete", onWin );
-      board.emit( "set" );
     },
     newSolvedGame: function () {
       this.newGame([

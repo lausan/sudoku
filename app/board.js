@@ -9,13 +9,17 @@ var BOARD_SIZE = 9;
 var SUB_BOARD_SIZE = 3;
 
 // MODULE HELPERS
-function validValue ( value ) {
-  return value === null || (
+function goodValue ( value ) {
+  return (
     !isNaN( Number( value ) ) &&
     Number( value ) % 1 === 0 &&
     Number( value ) > 0 &&
     Number( value ) < 10
   );
+}
+
+function validValue ( value ) {
+  return value === null || goodValue( value );
 }
 
 // null for empty string
@@ -170,7 +174,7 @@ Board.isPartiallyValid = function ( arr ) {
 Board.isFullyValid = function ( arr ) {
   return util.unique( arr ).length === arr.length &&
     arr.length === BOARD_SIZE &&
-    arr.every( validValue );
+    arr.every( goodValue );
 };
 
 module.exports = Board;
