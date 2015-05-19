@@ -52,7 +52,7 @@ function row(board, r) {
 function subsquare(board, i, j) {
   var n = board.length;
   var sn = Math.sqrt(n);
-  var row = i * 3, col = j * 3;
+  var row = i * sn, col = j * sn;
   var result = [];
 
   for (var r = row; r < row + sn; r++) {

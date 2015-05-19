@@ -534,6 +534,8 @@ Emitter.prototype.off = function ( name, method ) {
 module.exports = Emitter;
 
 },{"./util":7}],6:[function(_dereq_,module,exports){
+"use strict";
+
 var util = _dereq_("./util");
 
 function SudokuSolver(board) {
@@ -543,7 +545,7 @@ function SudokuSolver(board) {
   var solved;
 
   (function solve () {
-    if (solved) return;
+    if (solved) { return; }
     var next = firstMissing(board);
     var values, r, c;
     if (next === null) {
@@ -567,7 +569,7 @@ function SudokuSolver(board) {
         board[r][c] = null;
       }
     }
-  })()
+  })();
 
   return solved;
 
@@ -586,7 +588,7 @@ function row(board, r) {
 function subsquare(board, i, j) {
   var n = board.length;
   var sn = Math.sqrt(n);
-  var row = i * 3, col = j * 3;
+  var row = i * sn, col = j * sn;
   var result = [];
 
   for (var r = row; r < row + sn; r++) {
@@ -603,7 +605,7 @@ function firstMissing(board) {
   var c;
   for (var r = 0; r < board.length; r++) {
     c = board[r].indexOf(null);
-    if (c !== -1) break;
+    if (c !== -1) { break; }
   }
   if (r === board.length && c === -1) {
     // no missing values
