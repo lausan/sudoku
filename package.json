@@ -8,7 +8,7 @@
     "build": "browserify ./app/app.js -s sudoku -o ./app.js",
     "test": "npm run lint && testling",
     "lint": "jshint app/*.js && jshint test/*.js",
-    "style": "sass --watch style/app.sass:style/app.css"
+    "style": "sass style/app.sass:style/app.css"
   },
   "author": "Nick Bottomley (github.com/nickb1080)",
   "license": "MIT",

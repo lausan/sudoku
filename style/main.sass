@@ -10,6 +10,15 @@ button,
 input
   font: inherit
 
+button
+  background: transparent
+  color: white
+  border: 1px solid white
+  border-radius: .25rem
+  display: block
+  padding: .25em
+  margin: 0 auto
+
 .page-header
   background: #2980b9
   color: #fff
@@ -28,6 +37,11 @@ input
       margin-right: 1rem
   a
     color: white
+  .solve
+    color: white
+    &:hover
+      color: #2980b9
+      background: white
 
 .main
   margin: 1rem auto
@@ -45,13 +59,6 @@ input
   h2
     margin: 0
   .new-game
-    background: transparent
-    color: white
-    border: 1px solid white
-    border-radius: .25rem
-    display: block
-    padding: .25em
-    margin: 0 auto
     &:hover
       color: #2ecc71
       background: white

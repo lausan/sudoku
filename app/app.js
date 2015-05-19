@@ -7,6 +7,7 @@ var $ = require( "jquery" );
 var Board = require( "./board" );
 var BoardView = require( "./board-view" );
 var BoardController = require( "./board-controller" );
+var SudokuSolver = require("./solver");
 
 var sudoku = ( function () {
   var main = $( ".main" );
@@ -15,6 +16,11 @@ var sudoku = ( function () {
   $( ".js-new-game" ).click( function () {
     sudoku.newGame();
     won.slideUp();
+  });
+
+  $( ".js-solve" ).click( function () {
+    sudoku.newGame(SudokuSolver(sudoku._game.board._board));
+    onWin();
   });
 
   function toggleCells ( onOff ) {

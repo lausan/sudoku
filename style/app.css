@@ -12,6 +12,15 @@ button,
 input {
   font: inherit; }
 
+button {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+  border-radius: 0.25rem;
+  display: block;
+  padding: 0.25em;
+  margin: 0 auto; }
+
 .page-header {
   background: #2980b9;
   color: white;
@@ -30,13 +39,18 @@ input {
       margin-right: 1rem; }
   .page-header a {
     color: white; }
+  .page-header .solve {
+    color: white; }
+    .page-header .solve:hover {
+      color: #2980b9;
+      background: white; }
 
 .main {
   margin: 1rem auto;
   width: 27rem;
   max-width: 100%;
-  max-width: -webkit-calc(100% - 2rem );
-  max-width: calc(100% - 2rem ); }
+  max-width: -webkit-calc( 100% - 2rem );
+  max-width: calc( 100% - 2rem ); }
 
 .won {
   display: none;
@@ -46,17 +60,9 @@ input {
   padding: 1rem; }
   .won h2 {
     margin: 0; }
-  .won .new-game {
-    background: transparent;
-    color: white;
-    border: 1px solid white;
-    border-radius: 0.25rem;
-    display: block;
-    padding: 0.25em;
-    margin: 0 auto; }
-    .won .new-game:hover {
-      color: #2ecc71;
-      background: white; }
+  .won .new-game:hover {
+    color: #2ecc71;
+    background: white; }
 
 .block {
   display: block; }
