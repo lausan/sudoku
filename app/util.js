@@ -53,6 +53,13 @@ function bindAll ( obj ) {
   return obj;
 }
 
+function set(arr) {
+  return arr.reduce(function(memo, item) {
+    memo[item] = true;
+    return memo;
+  }, {});
+}
+
 module.exports = {
   unique: unique,
   flatten: flatten,
@@ -61,5 +68,6 @@ module.exports = {
   sliceOne: demethodizeOne( [].slice ),
   slice: demethodize( [].slice ),
   bindAll: bindAll,
-  addArrays: addArrays
+  addArrays: addArrays,
+  set: set
 };

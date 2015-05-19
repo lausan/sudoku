@@ -21,7 +21,6 @@ var sudoku = ( function () {
 
   $( ".js-solve" ).click( function () {
     sudoku.newGame(SudokuSolver(sudoku._game.board._board));
-    onWin();
   });
 
   function toggleCells ( onOff ) {
@@ -535,6 +534,8 @@ Emitter.prototype.off = function ( name, method ) {
 module.exports = Emitter;
 
 },{"./util":7}],6:[function(_dereq_,module,exports){
+var util = _dereq_("./util");
+
 function SudokuSolver(board) {
 
   var n = board.length;
@@ -548,14 +549,17 @@ function SudokuSolver(board) {
     if (next === null) {
       // copy the board
       solved = board.map(function(row) {
-        return row.map(id);
+        return row.map(util.identity);
       });
       return;
     }
     r = next[0];
     c = next[1];
-    values = set(row(board, r).concat(column(board, c),
-                                      subsquare(board, Math.floor(r / sn), Math.floor(c / sn))));
+    values = util.set(util.flatten([
+      row(board, r),
+      column(board, c),
+      subsquare(board, Math.floor(r / sn), Math.floor(c / sn))
+    ]));
     for (var val = 1; val <= n; val++) {
       if (!values[val]) {
         board[r][c] = val;
@@ -567,17 +571,6 @@ function SudokuSolver(board) {
 
   return solved;
 
-}
-
-function id(x) {
-  return x;
-}
-
-function set(arr) {
-  return arr.reduce(function(memo, item) {
-    memo[item] = true;
-    return memo;
-  }, {});
 }
 
 function column(board, c) {
@@ -623,7 +616,7 @@ function firstMissing(board) {
 
 module.exports = SudokuSolver;
 
-},{}],7:[function(_dereq_,module,exports){
+},{"./util":7}],7:[function(_dereq_,module,exports){
 "use strict";
 
 // This file contains utility functions used throughout the app.
@@ -679,6 +672,13 @@ function bindAll ( obj ) {
   return obj;
 }
 
+function set(arr) {
+  return arr.reduce(function(memo, item) {
+    memo[item] = true;
+    return memo;
+  }, {});
+}
+
 module.exports = {
   unique: unique,
   flatten: flatten,
@@ -687,7 +687,8 @@ module.exports = {
   sliceOne: demethodizeOne( [].slice ),
   slice: demethodize( [].slice ),
   bindAll: bindAll,
-  addArrays: addArrays
+  addArrays: addArrays,
+  set: set
 };
 
 },{}],8:[function(_dereq_,module,exports){

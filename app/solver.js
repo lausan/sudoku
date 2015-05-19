@@ -1,3 +1,5 @@
+var util = require("./util");
+
 function SudokuSolver(board) {
 
   var n = board.length;
@@ -11,14 +13,17 @@ function SudokuSolver(board) {
     if (next === null) {
       // copy the board
       solved = board.map(function(row) {
-        return row.map(id);
+        return row.map(util.identity);
       });
       return;
     }
     r = next[0];
     c = next[1];
-    values = set(row(board, r).concat(column(board, c),
-                                      subsquare(board, Math.floor(r / sn), Math.floor(c / sn))));
+    values = util.set(util.flatten([
+      row(board, r),
+      column(board, c),
+      subsquare(board, Math.floor(r / sn), Math.floor(c / sn))
+    ]));
     for (var val = 1; val <= n; val++) {
       if (!values[val]) {
         board[r][c] = val;
@@ -30,17 +35,6 @@ function SudokuSolver(board) {
 
   return solved;
 
-}
-
-function id(x) {
-  return x;
-}
-
-function set(arr) {
-  return arr.reduce(function(memo, item) {
-    memo[item] = true;
-    return memo;
-  }, {});
 }
 
 function column(board, c) {

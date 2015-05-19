@@ -20,7 +20,6 @@ var sudoku = ( function () {
 
   $( ".js-solve" ).click( function () {
     sudoku.newGame(SudokuSolver(sudoku._game.board._board));
-    onWin();
   });
 
   function toggleCells ( onOff ) {
