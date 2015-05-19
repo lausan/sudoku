@@ -1,3 +1,5 @@
+"use strict";
+
 var util = require("./util");
 
 function SudokuSolver(board) {
@@ -7,7 +9,7 @@ function SudokuSolver(board) {
   var solved;
 
   (function solve () {
-    if (solved) return;
+    if (solved) { return; }
     var next = firstMissing(board);
     var values, r, c;
     if (next === null) {
@@ -31,7 +33,7 @@ function SudokuSolver(board) {
         board[r][c] = null;
       }
     }
-  })()
+  })();
 
   return solved;
 
@@ -67,7 +69,7 @@ function firstMissing(board) {
   var c;
   for (var r = 0; r < board.length; r++) {
     c = board[r].indexOf(null);
-    if (c !== -1) break;
+    if (c !== -1) { break; }
   }
   if (r === board.length && c === -1) {
     // no missing values
